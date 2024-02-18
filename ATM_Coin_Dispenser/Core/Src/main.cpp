@@ -19,7 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.hpp"
 
-#include "coindispenser.hpp"
+#include "coindispenser.hpp" //coin dispenser object
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -67,7 +67,7 @@ static void MX_TIM3_Init(void);
 void servo_sweep (CoinDispenser* cd) {
 	int angles[5] = {25, 70, 90, 120, 180};
 
-	//start_PMW (htim, timChannel);
+	//start_PMW (htim, timChannel);l
 
 	for (int i = 0; i < 5; i++) {
 		cd->servo_write(angles[i]);
