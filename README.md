@@ -1,0 +1,11 @@
+## Important Files and Location
+- main.cpp
+  - Used to run the code
+  - Location: core->src
+- coindispenser.cpp & coindispenser.hpp
+  - CoinDispenser Object, used to control servo and define the content of each dispenser tube
+  - .cpp files defines the main body of the function, .hpp file defines the object's variables and function
+  - Location: core->inc
+- ATM_coin_dispenser.ioc
+  - Used to set up the pins and configuaration of the STM32
+  - Location: the main folder
