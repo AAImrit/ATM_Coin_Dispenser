@@ -8,7 +8,7 @@
 
 #include "coindispenser.hpp"
 
-CoinDispenser::CoinDispenser(int cap, const servo& servoObj) : capacity(cap), cdServo(servoObj) {
+CoinDispenser::CoinDispenser(int cap, const servo& servoObj) : coinCapacity(cap), cdServo(servoObj) {
 	/*
 	 * the constructor of the object. This is called the first time to initialize the object
 	 * Note: use this style when defining a coin dispenser in the code
@@ -21,8 +21,8 @@ CoinDispenser::CoinDispenser(int cap, const servo& servoObj) : capacity(cap), cd
 	 * Returns:
 	 * none
 	 */
-
-	servo_write(180);
+	this->coinLeft = cap;
+	servo_write(180); //this might not work since PMW is not started, maybe have to start PMW here?
 
 }
 
@@ -65,9 +65,27 @@ void CoinDispenser::servo_write(int angle) {
 }
 
 
-void CoinDispenser::push_coin() {
-	//push coin then come back to neutral position
-	servo_write(100);
-	HAL_Delay(200);
-	servo_write(180);
+void CoinDispenser::push_coin(int amount) {
+	/*
+	 * push out amount of coin specifies. the servo turn x amount of times
+	 *
+	 * Args:
+	 * amount -> the amount of coins we want to push out, default value is 1
+	 *
+	 * Return:
+	 * None
+	 */
+
+	for (amount; amount > 0; amount--) {
+		servo_write(100);
+		HAL_Delay(200);
+		servo_write(180);
+		HAL_Delay(250);
+		this->coinLeft--; //decrementing amount of coins left in the tube
+	}
+}
+
+int CoinDispenser::get_coin_left() {
+	//getter function that return amount of coin left in tube
+	return this->coinLeft;
 }

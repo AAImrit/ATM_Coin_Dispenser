@@ -25,16 +25,22 @@ typedef struct {
 
 class CoinDispenser {
 public:
-	int capacity; //amount of coin inside the coin dispenser
+	int coinCapacity; //total amount of coins that can be placed in tube
 	servo cdServo; // the servo associated with this
 
+private:
+	int coinLeft; //amount of coin left in the tube
+
+public:
 	//constructor
 	CoinDispenser(int cap, const servo& servoObj);
 
 	//functions to do stuff
 	void start_PMW ();
 	void servo_write(int angle);
-	void push_coin ();
+	void push_coin (int amount = 1);
+	int get_coin_left();
+	//might need a function to validate amount of coins left, if 0 display error or something
 
 private:
 	int map (servo* cdServo, int angle);
