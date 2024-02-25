@@ -20,6 +20,7 @@
 #include "main.hpp"
 #include "coindispenser.hpp" //coin dispenser object
 
+//khalesah asked questions
 
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim2;
@@ -76,7 +77,7 @@ int main(void) {
   CoinDispenser cd1(5, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1});
   CoinDispenser cd2(5, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2});
 
-  //starting PMW channel for the coin dispensers
+  //starting PWM channel for the coin dispensers
   cd1.start_PMW();
   cd2.start_PMW();
 
