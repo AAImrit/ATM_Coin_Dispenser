@@ -20,7 +20,6 @@
 #include "main.hpp"
 #include "coindispenser.hpp" //coin dispenser object
 
-//khalesah asked questions
 
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim2;
@@ -37,20 +36,10 @@ static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 
 
-void servo_sweep (CoinDispenser* cd) {
-	int angles[5] = {25, 70, 90, 120, 180};
+//user functions prototype---------------------------------------------------
+void servo_sweep (CoinDispenser* cd);
 
-	//start_PMW (htim, timChannel);l
 
-	for (int i = 0; i < 5; i++) {
-		cd->servo_write(angles[i]);
-		HAL_Delay(200);
-		//servo_write(0);
-		HAL_Delay(200);
-	}
-	HAL_Delay(600);
-
-}
 
 /**
   * @brief  The application entry point.
@@ -89,6 +78,29 @@ int main(void) {
 
   }
 }
+
+
+//user_function ----------------------------------------------------------
+int inventoryMoney (CoinDispenser) {
+
+}
+
+void servo_sweep (CoinDispenser* cd) {
+	int angles[5] = {25, 70, 90, 120, 180};
+
+	for (int i = 0; i < 5; i++) {
+		cd->servo_write(angles[i]);
+		HAL_Delay(200);
+		//servo_write(0);
+		HAL_Delay(200);
+	}
+	HAL_Delay(600);
+
+}
+
+
+
+//STM32 Functions ------------------------------------------------------------
 
 /**
   * @brief System Clock Configuration
@@ -135,6 +147,7 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 }
+
 
 /**
   * @brief TIM2 Initialization Function
