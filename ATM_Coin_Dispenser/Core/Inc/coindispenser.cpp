@@ -89,3 +89,9 @@ int CoinDispenser::get_coin_left() {
 	//getter function that return amount of coin left in tube
 	return this->coinLeft;
 }
+
+int CoinDispenser::get_money_left() {
+	//getter function to return amount of money left
+	//do I need to check this value does not go over 32 bit??
+	return (this->coinValue*this->coinLeft);
+}
