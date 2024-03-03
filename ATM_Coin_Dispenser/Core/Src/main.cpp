@@ -19,6 +19,8 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.hpp"
 #include "coindispenser.hpp" //coin dispenser object
+#include <array>
+#include <iostream>
 
 
 /* Private variables ---------------------------------------------------------*/
@@ -26,6 +28,9 @@ TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart2;
+
+const int DISPESER_SIZE = 5; //constant value cuz we have 5 coin dispensers
+
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -38,7 +43,8 @@ static void MX_TIM3_Init(void);
 
 //user functions prototype---------------------------------------------------
 void servo_sweep (CoinDispenser* cd);
-
+int inventoryMoney (CoinDispenser *dispensers);
+bool coin_to_dispense (int userValue, CoinDispenser *dispensers, int *coinDispense);
 
 
 /**
@@ -62,28 +68,83 @@ int main(void) {
   MX_TIM2_Init();
   MX_TIM3_Init();
 
-  //initializing coin dispensers easy way
-  CoinDispenser cd1(5, 200, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1});
-  CoinDispenser cd2(5, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2});
+  /*//initializing coin dispensers easy way
+   * old initialization method
+   * CoinDispenser cd1(5, 200, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1});
+   * CoinDispenser cd2(5, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2});
+	*/
 
+  //USER INITIALIZATIONS ----------------------------------------------------
+  int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0}; //fixed array that can be overwriten to say what we are dispensing
+
+  //trying a better way slightly better way for initializing
+  CoinDispenser dispensers[DISPESER_SIZE];
+  dispensers[0] = CoinDispenser(5, 200, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1});
+  dispensers[1] = CoinDispenser(5, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2});
+  dispensers[2] = CoinDispenser(5, 25, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_3, 3});
+  dispensers[3] = CoinDispenser(5, 10, (servo){0, 180, 50, 250, &htim3, TIM_CHANNEL_1, 1});
+  dispensers[4] = CoinDispenser(5, 5, (servo){0, 180, 50, 250, &htim3, TIM_CHANNEL_1, 2});
 
   //starting PWM channel for the coin dispensers
-  cd1.start_PMW();
-  cd2.start_PMW();
-
+  for (int i = 0; i < DISPENSER_SIZE; i++) {
+	  dispensers[i].start_PMW();
+  }
 
   /* Infinite loop */
   while (1) {
-	  servo_sweep (&cd2);
-	  cd1.push_coin(5);
+	  servo_sweep (&dispensers[1]);
+	  dispensers[0].push_coin(5);
 
   }
 }
 
 
 //user_function ----------------------------------------------------------
-int inventoryMoney (CoinDispenser) {
+int inventory_money (CoinDispenser *dispensers) {
+	/* calculates total amount of money in the coinDispenser
+	 *
+	 * Args:
+	 * dispensers -> the array that hold all coin dispenser objects
+	 *
+	 * Return:
+	 * sum -> total amount of money in all coinDispensers
+	 */
+	int sum = 0;
+	for (int i = 0; i < DISPENSER_SIZE; i++) {
+		//Note, do I need to validate that the sum is < bit width?
+		sum += dispensers[i].get_money_left();
+	}
 
+	return sum;
+}
+
+bool coin_to_dispense (int userValue, CoinDispenser *dispensers, int *coinDispense) {
+	/* calculates how much of each thing to dispense
+	 *
+	 * Args:
+	 * userValue -> user value that has been rounded and converted to int, multiplied by 100
+	 * dispensers -> the array that hold all coin dispenser objects
+	 * coinDispene -> array that contains how many of each coin we will dispense
+	 *
+	 * Return:
+	 * True/False -> success, whether our dispenser can break down
+	 */
+
+	for (int i = 0; i < DISPENSER_SIZE && userValue > 0; i++) {
+		int coin = userValue/(dispensers[i].coinValue);
+		int coinLeft = dispensers[i].get_coin_left();
+		if (coinLeft < coin){
+			coin = coinLeft;
+		}
+
+		coinDispense[i] = coin;
+		userValue = userValue - coin*dispensers[i].coinValue;
+	}
+
+	if (userValue > 0) {
+		return false; //the coins we have cannot dispense what they want
+	}
+	return true; //we can dispense the amount requested
 }
 
 void servo_sweep (CoinDispenser* cd) {
