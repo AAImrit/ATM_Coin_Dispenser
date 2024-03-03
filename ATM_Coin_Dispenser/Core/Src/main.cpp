@@ -62,9 +62,10 @@ int main(void) {
   MX_TIM2_Init();
   MX_TIM3_Init();
 
-  //initializing coin dispensers
-  CoinDispenser cd1(5, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1});
-  CoinDispenser cd2(5, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2});
+  //initializing coin dispensers easy way
+  CoinDispenser cd1(5, 200, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1});
+  CoinDispenser cd2(5, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2});
+
 
   //starting PWM channel for the coin dispensers
   cd1.start_PMW();
