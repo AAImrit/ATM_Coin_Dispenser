@@ -8,8 +8,7 @@
 
 #include "coindispenser.hpp"
 
-CoinDispenser::CoinDispenser(int cap, int val, const servo& servoObj)
-: coinCapacity(cap), coinValue(val), cdServo(servoObj) {
+CoinDispenser::CoinDispenser(int cap, const servo& servoObj) : coinCapacity(cap), cdServo(servoObj) {
 	/*
 	 * the constructor of the object. This is called the first time to initialize the object
 	 * Note: use this style when defining a coin dispenser in the code
