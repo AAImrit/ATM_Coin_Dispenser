@@ -10,7 +10,7 @@
 #include "main_logic.hpp"
 
 void main_logic() {
-
+//main logic and stuff to do in while loop goes here
 }
 
 //user_function ----------------------------------------------------------

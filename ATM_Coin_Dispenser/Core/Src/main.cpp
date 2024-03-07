@@ -62,9 +62,7 @@ static void MX_TIM2_Init(void);
 static void MX_TIM4_Init(void);
 
 /* USER CODE BEGIN PFP */
-void servo_sweep (CoinDispenser* cd);
-int inventoryMoney (CoinDispenser *dispensers);
-bool coin_to_dispense (int userValue, CoinDispenser *dispensers, int *coinDispense);
+
 
 /* USER CODE END PFP */
 
