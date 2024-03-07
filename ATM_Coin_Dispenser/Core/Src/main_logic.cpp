@@ -5,9 +5,11 @@
 
 
 #include "stm32f4xx_hal.h"
-#include "main.hpp"
+//#include "main.hpp"
 #include "coindispenser.hpp"
 #include "main_logic.hpp"
+
+const int DISPENSER_SIZE = 5;
 
 void main_logic() {
 //main logic and stuff to do in while loop goes here

@@ -22,6 +22,7 @@
 /* USER CODE BEGIN Includes */
 #include "main.hpp"
 #include "coindispenser.hpp"
+#include "main_logic.hpp"
 #include <array>
 #include <iostream>
 
