@@ -8,6 +8,7 @@
 
 #include "coindispenser.hpp"
 
+
 CoinDispenser::CoinDispenser(int cap, int val, const servo& servoObj): coinCapacity(cap), coinValue(val), cdServo(servoObj) {
 	/*
 	 * the constructor of the object. This is called the first time to initialize the object
@@ -93,5 +94,5 @@ int CoinDispenser::get_coin_left() {
 int CoinDispenser::get_money_left() {
 	//getter function to return amount of money left
 	//do I need to check this value does not go over 32 bit??
-	return (this->coinValue*this->coinLeft);
+	return ((this->coinValue)*(this->coinLeft));
 }

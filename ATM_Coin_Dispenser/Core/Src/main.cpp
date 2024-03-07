@@ -17,62 +17,97 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 #include "main.hpp"
-#include "coindispenser.hpp" //coin dispenser object
+#include "coindispenser.hpp"
 #include <array>
 #include <iostream>
 
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim2;
-TIM_HandleTypeDef htim3;
+TIM_HandleTypeDef htim4;
 
 UART_HandleTypeDef huart2;
 
+/* USER CODE BEGIN PV */
+
 const int DISPENSER_SIZE = 5; //constant value cuz we have 5 coin dispensers
 
-
+/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM2_Init(void);
-static void MX_TIM3_Init(void);
+static void MX_TIM4_Init(void);
 
-
-//user functions prototype---------------------------------------------------
+/* USER CODE BEGIN PFP */
 void servo_sweep (CoinDispenser* cd);
 int inventoryMoney (CoinDispenser *dispensers);
 bool coin_to_dispense (int userValue, CoinDispenser *dispensers, int *coinDispense);
 
+/* USER CODE END PFP */
+
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
+
+
+/* USER CODE END 0 */
 
 /**
   * @brief  The application entry point.
   * @retval int
   */
+int main(void)
+{
+  /* USER CODE BEGIN 1 */
 
-int main(void) {
+  /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
   /* Configure the system clock */
   SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_TIM2_Init();
-  MX_TIM3_Init();
+  MX_TIM4_Init();
 
-  /*//initializing coin dispensers easy way
-   * old initialization method
-   * CoinDispenser cd1(5, 200, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1});
-   * CoinDispenser cd2(5, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2});
-	*/
+  /* USER CODE BEGIN 2 */
+
 
   //USER INITIALIZATIONS ----------------------------------------------------
   int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0}; //fixed array that can be overwriten to say what we are dispensing
@@ -81,18 +116,21 @@ int main(void) {
   CoinDispenser dispensers[DISPENSER_SIZE]= {CoinDispenser(5, 200, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1}),
 		  CoinDispenser(5, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2}),
 		  CoinDispenser(5, 25, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_3, 3}),
-		  CoinDispenser(5, 10, (servo){0, 180, 50, 250, &htim3, TIM_CHANNEL_1, 1}),
-		  CoinDispenser(5, 5, (servo){0, 180, 50, 250, &htim3, TIM_CHANNEL_2, 2})
-
-
+		  CoinDispenser(5, 10, (servo){0, 180, 50, 250, &htim4, TIM_CHANNEL_1, 1}),
+		  CoinDispenser(5, 5, (servo){0, 180, 50, 250, &htim4, TIM_CHANNEL_2, 2})
   };
 
   //starting PWM channel for the coin dispensers
+
   for (int i = 0; i < DISPENSER_SIZE; i++) {
 	  dispensers[i].start_PMW();
   }
 
+  /* USER CODE END 2 */
+
   /* Infinite loop */
+
+  /* USER CODE BEGIN WHILE */
   while (1) {
 	  servo_sweep (&dispensers[1]);
 	  dispensers[0].push_coin(5);
@@ -100,9 +138,12 @@ int main(void) {
 	  servo_sweep (&dispensers[3]);
 	  //dispensers[3].push_coin(3);
 	  dispensers[4].push_coin(3);
-
   }
-}
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+ }
+  /* USER CODE END 3 */
 
 
 //user_function ----------------------------------------------------------
@@ -285,46 +326,46 @@ static void MX_TIM2_Init(void)
 }
 
 /**
-  * @brief TIM3 Initialization Function
+  * @brief TIM4 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_TIM3_Init(void)
+static void MX_TIM4_Init(void)
 {
 
-  /* USER CODE BEGIN TIM3_Init 0 */
+  /* USER CODE BEGIN TIM4_Init 0 */
 
-  /* USER CODE END TIM3_Init 0 */
+  /* USER CODE END TIM4_Init 0 */
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
 
-  /* USER CODE BEGIN TIM3_Init 1 */
+  /* USER CODE BEGIN TIM4_Init 1 */
 
-  /* USER CODE END TIM3_Init 1 */
-  htim3.Instance = TIM3;
-  htim3.Init.Prescaler = 160;
-  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim3.Init.Period = 2000;
-  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  /* USER CODE END TIM4_Init 1 */
+  htim4.Instance = TIM4;
+  htim4.Init.Prescaler = 160;
+  htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim4.Init.Period = 2000;
+  htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim4) != HAL_OK)
   {
     Error_Handler();
   }
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  if (HAL_TIM_ConfigClockSource(&htim4, &sClockSourceConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  if (HAL_TIM_PWM_Init(&htim4) != HAL_OK)
   {
     Error_Handler();
   }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim4, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
@@ -332,18 +373,19 @@ static void MX_TIM3_Init(void)
   sConfigOC.Pulse = 50;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
   {
     Error_Handler();
   }
-  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  sConfigOC.Pulse = 0;
+  if (HAL_TIM_PWM_ConfigChannel(&htim4, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN TIM3_Init 2 */
+  /* USER CODE BEGIN TIM4_Init 2 */
 
-  /* USER CODE END TIM3_Init 2 */
-  HAL_TIM_MspPostInit(&htim3);
+  /* USER CODE END TIM4_Init 2 */
+  HAL_TIM_MspPostInit(&htim4);
 
 }
 
@@ -412,6 +454,14 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PA6 PA7 */
+  GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
