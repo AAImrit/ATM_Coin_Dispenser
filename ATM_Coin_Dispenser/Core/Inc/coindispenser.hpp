@@ -35,7 +35,7 @@ private:
 
 public:
 	//constructor
-	CoinDispenser(int cap, const servo& servoObj);
+	CoinDispenser(int cap, int val, const servo& servoObj);
 
 	//functions to do stuff
 	void start_PMW ();

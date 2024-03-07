@@ -8,8 +8,7 @@
 
 #include "coindispenser.hpp"
 
-CoinDispenser::CoinDispenser(int cap, int val, const servo& servoObj)
-: coinCapacity(cap), coinValue(val), cdServo(servoObj) {
+CoinDispenser::CoinDispenser(int cap, int val, const servo& servoObj): coinCapacity(cap), coinValue(val), cdServo(servoObj) {
 	/*
 	 * the constructor of the object. This is called the first time to initialize the object
 	 * Note: use this style when defining a coin dispenser in the code
@@ -78,9 +77,9 @@ void CoinDispenser::push_coin(int amount) {
 	 */
 
 	for (amount; amount > 0; amount--) {
-		servo_write(100);
+		servo_write(80);
 		HAL_Delay(200);
-		servo_write(180);
+		servo_write(180); //restore to original position
 		HAL_Delay(250);
 		this->coinLeft--; //decrementing amount of coins left in the tube
 	}

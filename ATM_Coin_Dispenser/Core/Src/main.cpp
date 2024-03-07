@@ -29,7 +29,7 @@ TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart2;
 
-const int DISPESER_SIZE = 5; //constant value cuz we have 5 coin dispensers
+const int DISPENSER_SIZE = 5; //constant value cuz we have 5 coin dispensers
 
 
 
@@ -78,12 +78,14 @@ int main(void) {
   int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0}; //fixed array that can be overwriten to say what we are dispensing
 
   //trying a better way slightly better way for initializing
-  CoinDispenser dispensers[DISPESER_SIZE];
-  dispensers[0] = CoinDispenser(5, 200, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1});
-  dispensers[1] = CoinDispenser(5, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2});
-  dispensers[2] = CoinDispenser(5, 25, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_3, 3});
-  dispensers[3] = CoinDispenser(5, 10, (servo){0, 180, 50, 250, &htim3, TIM_CHANNEL_1, 1});
-  dispensers[4] = CoinDispenser(5, 5, (servo){0, 180, 50, 250, &htim3, TIM_CHANNEL_1, 2});
+  CoinDispenser dispensers[DISPENSER_SIZE]= {CoinDispenser(5, 200, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1}),
+		  CoinDispenser(5, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2}),
+		  CoinDispenser(5, 25, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_3, 3}),
+		  CoinDispenser(5, 10, (servo){0, 180, 50, 250, &htim3, TIM_CHANNEL_1, 1}),
+		  CoinDispenser(5, 5, (servo){0, 180, 50, 250, &htim3, TIM_CHANNEL_2, 2})
+
+
+  };
 
   //starting PWM channel for the coin dispensers
   for (int i = 0; i < DISPENSER_SIZE; i++) {
@@ -94,6 +96,10 @@ int main(void) {
   while (1) {
 	  servo_sweep (&dispensers[1]);
 	  dispensers[0].push_coin(5);
+	  servo_sweep (&dispensers[2]);
+	  servo_sweep (&dispensers[3]);
+	  //dispensers[3].push_coin(3);
+	  dispensers[4].push_coin(3);
 
   }
 }
