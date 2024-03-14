@@ -17,11 +17,28 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <main.hpp>
 #include <numberpad.hpp>	// number pad object
-#include "main.hpp"
+//#include "main.hpp"
 #include "coindispenser.hpp" //coin dispenser object
+#include <Stdio.h>
 
-//khalesah asked questions
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
 TIM_HandleTypeDef htim2;
@@ -29,6 +46,9 @@ TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart2;
 
+/* USER CODE BEGIN PV */
+
+/* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
@@ -36,8 +56,12 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
+/* USER CODE BEGIN PFP */
 
+/* USER CODE END PFP */
 
+/* Private user code ---------------------------------------------------------*/
+/* USER CODE BEGIN 0 */
 void servo_sweep (CoinDispenser* cd) {
 	int angles[5] = {25, 70, 90, 120, 180};
 
@@ -53,43 +77,69 @@ void servo_sweep (CoinDispenser* cd) {
 
 }
 
+/* USER CODE END 0 */
+
 /**
   * @brief  The application entry point.
   * @retval int
-  */zz
+  */
+int main(void)
+{
+  /* USER CODE BEGIN 1 */
 
-int main(void) {
+  /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
   /* Configure the system clock */
   SystemClock_Config();
+
+  /* USER CODE BEGIN SysInit */
+
+  /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  /* USER CODE BEGIN 2 */
 
-  //initializing coin dispensers easy way
   CoinDispenser cd1(5, 200, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1});
   CoinDispenser cd2(5, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2});
+  NumberPad numPad;
+  char brf[2];
 
 
   //starting PWM channel for the coin dispensers
   cd1.start_PMW();
   cd2.start_PMW();
 
+  /* USER CODE END 2 */
 
   /* Infinite loop */
-  while (1) {
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
 	  servo_sweep (&cd2);
 	  cd1.push_coin(5);
 
+	  char key = numPad.getKey();
+	  sprintf(brf, "%u", key);
+	  HAL_UART_Transmit(&huart2, (uint8_t*) brf, sizeof(brf) - 1, 10);
+
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
   }
+  /* USER CODE END 3 */
 }
 
 /**
@@ -321,6 +371,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, Col1_Pin|Col2_Pin|Col3_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
@@ -333,6 +386,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Row1_Pin Row2_Pin Row3_Pin Row4_Pin */
+  GPIO_InitStruct.Pin = Row1_Pin|Row2_Pin|Row3_Pin|Row4_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Col1_Pin Col2_Pin Col3_Pin */
+  GPIO_InitStruct.Pin = Col1_Pin|Col2_Pin|Col3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
