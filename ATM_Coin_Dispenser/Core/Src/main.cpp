@@ -17,6 +17,7 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <numberpad.hpp>	// number pad object
 #include "main.hpp"
 #include "coindispenser.hpp" //coin dispenser object
 
@@ -55,7 +56,7 @@ void servo_sweep (CoinDispenser* cd) {
 /**
   * @brief  The application entry point.
   * @retval int
-  */
+  */zz
 
 int main(void) {
 
