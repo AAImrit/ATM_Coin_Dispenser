@@ -6,13 +6,14 @@ File.Version=6
 KeepUserPlacement=false
 Mcu.CPN=STM32F411RET6
 Mcu.Family=STM32F4
-Mcu.IP0=NVIC
-Mcu.IP1=RCC
-Mcu.IP2=SYS
-Mcu.IP3=TIM2
-Mcu.IP4=TIM3
-Mcu.IP5=USART2
-Mcu.IPNb=6
+Mcu.IP0=I2C1
+Mcu.IP1=NVIC
+Mcu.IP2=RCC
+Mcu.IP3=SYS
+Mcu.IP4=TIM2
+Mcu.IP5=TIM3
+Mcu.IP6=USART2
+Mcu.IPNb=7
 Mcu.Name=STM32F411R(C-E)Tx
 Mcu.Package=LQFP64
 Mcu.Pin0=PC13-ANTI_TAMP
@@ -20,6 +21,7 @@ Mcu.Pin1=PC14-OSC32_IN
 Mcu.Pin10=PA6
 Mcu.Pin11=PA7
 Mcu.Pin12=PB10
+<<<<<<< HEAD
 Mcu.Pin13=PB12
 Mcu.Pin14=PB13
 Mcu.Pin15=PB14
@@ -27,13 +29,26 @@ Mcu.Pin16=PB15
 Mcu.Pin17=PC6
 Mcu.Pin18=PC7
 Mcu.Pin19=PC8
+=======
+Mcu.Pin13=PA13
+Mcu.Pin14=PA14
+Mcu.Pin15=PB3
+Mcu.Pin16=PB8
+Mcu.Pin17=PB9
+Mcu.Pin18=VP_SYS_VS_Systick
+Mcu.Pin19=VP_TIM2_VS_ClockSourceINT
+>>>>>>> branch 'master' of https://github.com/AAImrit/ATM_Coin_Dispenser.git
 Mcu.Pin2=PC15-OSC32_OUT
+<<<<<<< HEAD
 Mcu.Pin20=PA13
 Mcu.Pin21=PA14
 Mcu.Pin22=PB3
 Mcu.Pin23=VP_SYS_VS_Systick
 Mcu.Pin24=VP_TIM2_VS_ClockSourceINT
 Mcu.Pin25=VP_TIM3_VS_ClockSourceINT
+=======
+Mcu.Pin20=VP_TIM3_VS_ClockSourceINT
+>>>>>>> branch 'master' of https://github.com/AAImrit/ATM_Coin_Dispenser.git
 Mcu.Pin3=PH0 - OSC_IN
 Mcu.Pin4=PH1 - OSC_OUT
 Mcu.Pin5=PA0-WKUP
@@ -41,7 +56,11 @@ Mcu.Pin6=PA1
 Mcu.Pin7=PA2
 Mcu.Pin8=PA3
 Mcu.Pin9=PA5
+<<<<<<< HEAD
 Mcu.PinsNb=26
+=======
+Mcu.PinsNb=21
+>>>>>>> branch 'master' of https://github.com/AAImrit/ATM_Coin_Dispenser.git
 Mcu.ThirdPartyNb=0
 Mcu.UserConstants=
 Mcu.UserName=STM32F411RETx
@@ -116,6 +135,12 @@ PB3.GPIOParameters=GPIO_Label
 PB3.GPIO_Label=SWO
 PB3.Locked=true
 PB3.Signal=SYS_JTDO-SWO
+PB8.Locked=true
+PB8.Mode=I2C
+PB8.Signal=I2C1_SCL
+PB9.Locked=true
+PB9.Mode=I2C
+PB9.Signal=I2C1_SDA
 PC13-ANTI_TAMP.GPIOParameters=GPIO_Label,GPIO_ModeDefaultEXTI
 PC13-ANTI_TAMP.GPIO_Label=B1 [Blue PushButton]
 PC13-ANTI_TAMP.GPIO_ModeDefaultEXTI=GPIO_MODE_IT_FALLING
@@ -179,7 +204,7 @@ ProjectManager.ToolChainLocation=
 ProjectManager.UAScriptAfterPath=
 ProjectManager.UAScriptBeforePath=
 ProjectManager.UnderRoot=true
-ProjectManager.functionlistsort=1-SystemClock_Config-RCC-false-HAL-false,2-MX_GPIO_Init-GPIO-false-HAL-true,3-MX_USART2_UART_Init-USART2-false-HAL-true,4-MX_TIM2_Init-TIM2-false-HAL-true,5-MX_TIM3_Init-TIM3-false-HAL-true
+ProjectManager.functionlistsort=1-SystemClock_Config-RCC-false-HAL-false,2-MX_GPIO_Init-GPIO-false-HAL-true,3-MX_USART2_UART_Init-USART2-false-HAL-true,4-MX_TIM2_Init-TIM2-false-HAL-true,5-MX_TIM3_Init-TIM3-false-HAL-true,6-MX_I2C1_Init-I2C1-false-HAL-true
 RCC.48MHZClocksFreq_Value=32000000
 RCC.AHBFreq_Value=64000000
 RCC.APB1CLKDivider=RCC_HCLK_DIV8
