@@ -10,7 +10,7 @@
 #define INC_COINDISPENSER_HPP_
 
 #include "stm32f4xx_hal.h"
-#include "main.hpp"
+#include "main.h"
 
 typedef struct {
 	int minAngle; //minAngle of the servo

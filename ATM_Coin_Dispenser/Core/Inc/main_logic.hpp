@@ -10,7 +10,7 @@
 #define INC_MAIN_LOGIC_HPP_
 
 #include "stm32f4xx_hal.h"
-//#include "main.hpp"
+#include "main.h"
 #include "coindispenser.hpp"
 
 //extern const int DISPENSER_SIZE; //constant value cuz we have 5 coin dispensers
