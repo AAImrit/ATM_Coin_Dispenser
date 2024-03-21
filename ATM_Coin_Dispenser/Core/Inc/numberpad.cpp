@@ -1,192 +1,103 @@
 /*
- * NumberPad.cpp
- * Purpose: an object for the number pad This contains any repeated function/code we might need to use.
- * This file is the main body of the methods defined in the .hpp file
- *  Created on: Mar 14, 2024
- *      Author: Khalesah Alli
+ * numberpad.cpp
+ *
+ *  Created on: Mar 20, 2024
+ *      Author: khale
  */
 
-//#include <main.hpp>
-#include <numberpad.hpp>
-#include <string.h>
+#include "numberpad.hpp"
+#include "stm32f4xx_hal.h"
 
-NumberPad::NumberPad() {
+
+//#define ROW_COUNT 4
+//#define COL_COUNT 3
+
+
+
+numberpad::numberpad() {
 	// TODO Auto-generated constructor stub
 
 }
 
+/*
+numberpad::~numberpad() {
+	// TODO Auto-generated destructor stub
+}
+*/
 
-// NUMBER PAD FUNCTIONS
 
-// get the key that is currently being pressed, will be called within numberToDisplay()
-char NumberPad::getKey(){
+static char decode_keypad(uint8_t col, uint8_t row);
 
-	// Column 1
-	HAL_GPIO_WritePin(Col1_GPIO_Port, Col1_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(Col2_GPIO_Port, Col2_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(Col3_GPIO_Port, Col3_Pin, GPIO_PIN_RESET);
 
-	if (HAL_GPIO_ReadPin(Row1_GPIO_Port, Row1_Pin) == 1) {
-		return '1';
-	}
+const unsigned char keymap[4][3] =
+{
+    {'1', '2', '3'},
+    {'4', '5', '6'},
+    {'7', '8', '9'},
+    {'*', '0', '#'}
+};
 
-	if (HAL_GPIO_ReadPin(Row2_GPIO_Port, Row2_Pin) == 1) {
-		return '4';
-	}
 
-	if (HAL_GPIO_ReadPin(Row3_GPIO_Port, Row3_Pin) == 1) {
-		return '7';
-	}
 
-	if (HAL_GPIO_ReadPin(Row4_GPIO_Port, Row4_Pin) == 1) {
-		return '*';
-		//return 42;	// represents * key
-	}
+const uint32_t clo_state[4]={	(GPIO_BSRR_BR4|GPIO_BSRR_BS5|GPIO_BSRR_BS6),
+						(GPIO_BSRR_BS4|GPIO_BSRR_BR5|GPIO_BSRR_BS6),
+						(GPIO_BSRR_BS4|GPIO_BSRR_BS5|GPIO_BSRR_BR6),
+						(GPIO_BSRR_BS4|GPIO_BSRR_BS5|GPIO_BSRR_BS6)
+};
 
-	// Column 2
-	HAL_GPIO_WritePin(Col1_GPIO_Port, Col1_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(Col2_GPIO_Port, Col2_Pin, GPIO_PIN_SET);
-	HAL_GPIO_WritePin(Col3_GPIO_Port, Col3_Pin, GPIO_PIN_RESET);
 
-	if (HAL_GPIO_ReadPin(Row1_GPIO_Port, Row1_Pin) == 1) {
-		return '2';
-	}
+void numberpad::keypad_init(void)
+{
 
-	if (HAL_GPIO_ReadPin(Row2_GPIO_Port, Row2_Pin) == 1) {
-		return '5';
-	}
+	/*Enable clock access to GPIOC*/
+	RCC->AHB1ENR|=RCC_AHB1ENR_GPIOCEN;
 
-	if (HAL_GPIO_ReadPin(Row3_GPIO_Port, Row3_Pin) == 1) {
-		return '8';
-	}
+	/*Set PC0 to PC3 as input*/
+	GPIOC->MODER &= ~(GPIO_MODER_MODE0|GPIO_MODER_MODE1|GPIO_MODER_MODE2|GPIO_MODER_MODE3);
 
-	if (HAL_GPIO_ReadPin(Row4_GPIO_Port, Row4_Pin) == 1) {
-		return '0';
-	}
+	/* Activate internal pullup resistor for PC0 to PC3*/
+	GPIOC->PUPDR|=GPIO_PUPDR_PUPD0_0|GPIO_PUPDR_PUPD1_0|GPIO_PUPDR_PUPD2_0|GPIO_PUPDR_PUPD3_0;
 
-	// Column 3
-	HAL_GPIO_WritePin(Col1_GPIO_Port, Col1_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(Col2_GPIO_Port, Col2_Pin, GPIO_PIN_RESET);
-	HAL_GPIO_WritePin(Col3_GPIO_Port, Col3_Pin, GPIO_PIN_SET);
+	/*Set PC4 to PC7 as output*/
+	GPIOC->MODER |= GPIO_MODER_MODE4_0|GPIO_MODER_MODE5_0|GPIO_MODER_MODE6_0|GPIO_MODER_MODE7_0;
 
-	if (HAL_GPIO_ReadPin(Row1_GPIO_Port, Row1_Pin) == 1) {
-		return '3';
-	}
+	GPIOC->MODER &=~( GPIO_MODER_MODE4_1|GPIO_MODER_MODE5_1|GPIO_MODER_MODE6_1|GPIO_MODER_MODE7_1);
 
-	if (HAL_GPIO_ReadPin(Row2_GPIO_Port, Row2_Pin) == 1) {
-		return '6';
-	}
+	/*Set PC4 to PC7 as high*/
 
-	if (HAL_GPIO_ReadPin(Row3_GPIO_Port, Row3_Pin) == 1) {
-		return '9';
-	}
-
-	if (HAL_GPIO_ReadPin(Row4_GPIO_Port, Row4_Pin) == 1) {
-		return '#';
-		//return 35;	// represents # key
-	}
-
-	return 'N';		// corresponds to NO key being pressed
+	GPIOC->BSRR = GPIO_BSRR_BS4|GPIO_BSRR_BS5|GPIO_BSRR_BS6|GPIO_BSRR_BS7;
 }
 
-// collect user input and continuously display on LCD
-// need to return number value for code lol or can convert later on
-// HAVING PROBLEM WITH STRING TYPES!!
-std::string NumberPad::numberToDisplay(){
 
-	// LOGIC
-	// define a default string "00.00"
+char numberpad::keypad_read(void)
+{
 
-	// initiate keyPressed variable
+	unsigned char key=0,data=0;
 
-	// while (timeout not met)
-		// get key pressed
-		// update string if number
-		// update LCD display
+	for (int i=0;i<4;i++)
+	{
 
-		// if confirmed pressed
-			// do we need to check for a nonzero value and redirect user to while loop if zero
-			// return string to be passed onto LCD display
+		GPIOC->BSRR=clo_state[i];
 
-	//else if timeout occurred
-		// MAYBE display a warning
-		// cancel transaction, and go back to main menu
-		// return string which indicates to go back to main menu OR change return type
+		data=(GPIOC->IDR)&0xF; /*Get rid of data from bit 5 to bit31*/
 
-	char value[] = "0000";	// add decimal before sending to display
-	int count = 0;			// keep track of how many valid numbers pressed, to ensure don't exceed (hit max before stop updating)
-
-	char keyPressed;
-	char displayValue[5];
-
-	while (true) {	// add timeout to conditional
-		keyPressed = getKey();
-
-		if ((keyPressed != '*') and (keyPressed != '#')){
-			// increase count for valid input
-			count ++;
-
-			// update display
-			if (count < 4){
-				// move characters to left
-				memmove(value, value+1, strlen(value));
-
-				// add new character to the end
-				value[3] = keyPressed;
-
-				// create copy of string and add decimal in between
-				strcpy(displayValue, value);
-				memmove(displayValue+2+1, displayValue+2, strlen(displayValue)-2+1);
-				displayValue[2] = '.';
-
-				// send string to LCD to update display
-				//MICHELLE
-			}
-
-			// else do nothing, unless we want to put a warning message :( but im assuming that the user will get it
+		if(data != 0xF)
+		{
+			key=decode_keypad(i,data);
 		}
 
-		else if (keyPressed == '#'){
-			// check to make sure non zero
-			std::string str(value);
-			return str;
-		}
-
-		else{
-			//maybe backspace with *
-		}
 	}
+
+	return key;
 }
 
 
-// TIMING MIGHT BE A PROBLEM WITH THESE FUNCTIONS, MAYBE JUST USE THE getKey() FUNCTION AND DO IF STATEMENT COMPARISON
+char numberpad::decode_keypad(uint8_t col, uint8_t row)
+{
 
-// checks if confirm button was pressed, assuming that # key used as confirm
-bool NumberPad::isConfirm(){
-	char keyPressed = getKey();
-
-	if (keyPressed == '#') {
-			return true;
-			//return 35;	// represents # key
-	}
-
-	else{
-		return false;
-	}
+	if (row == 0xE) return keymap[0][col];
+	if (row == 0xD) return keymap[1][col];
+	if (row == 0xB) return keymap[2][col];
+	if (row == 0x7) return keymap[3][col];
+	return 0;
 }
-
-// might want to write an ISR for this so user can cancel at any time
-// checks if cancel button was pressed, assuming that * key used as cancel
-bool NumberPad::isCancel(){
-	char keyPressed = getKey();
-
-	if (keyPressed == '*') {
-		return true;
-		//return 42;	// represents * key
-	}
-
-	else{
-		return false;
-	}
-}
-

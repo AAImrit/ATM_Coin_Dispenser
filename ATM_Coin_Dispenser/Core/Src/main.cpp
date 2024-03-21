@@ -9,7 +9,7 @@
   * Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.
   *
-  * This software is licensed under terms that can be found in the LICENSE file
+  * This software is licensed undser terms that can be found in the LICENSE file
   * in the root directory of this software component.
   * If no LICENSE file comes with this software, it is provided AS-IS.
   *
@@ -18,10 +18,18 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include <main.hpp>
-#include <numberpad.hpp>	// number pad object
-//#include "main.hpp"
+#include "numberpad.hpp"	// number pad object
 #include "coindispenser.hpp" //coin dispenser object
+#include "LCD.hpp"
+#include "i2c.hpp"
 #include <Stdio.h>
+
+
+// initialize variables
+char lcd_data[30];
+int key;
+
+
 
 /* USER CODE END Includes */
 
@@ -41,6 +49,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
+
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
@@ -56,6 +66,7 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -110,30 +121,44 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
-  /* USER CODE BEGIN 2 */
+  MX_I2C1_Init();
 
+  /* USER CODE BEGIN 2 */
   CoinDispenser cd1(5, 200, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1});
   CoinDispenser cd2(5, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2});
-  NumberPad numPad;
-  char brf[2];
 
-
-  //starting PWM channel for the coin dispensers
   cd1.start_PMW();
   cd2.start_PMW();
 
+
+  // Initiate Objects
+  numberpad numPad;
+  LCD lcd;
+  lcd.lcd_init();
+  numPad.keypad_init();
+
   /* USER CODE END 2 */
+
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  servo_sweep (&cd2);
-	  cd1.push_coin(5);
+	  // testing coin dispenser mechanism
+	  //servo_sweep (&cd2);
+	  //cd1.push_coin(5);
 
-	  char key = numPad.getKey();
-	  sprintf(brf, "%u", key);
-	  HAL_UART_Transmit(&huart2, (uint8_t*) brf, sizeof(brf) - 1, 10);
+
+	  key=numPad.keypad_read();
+	  if(key)
+		{
+			lcd.setCursor(0, 0);
+			sprintf(lcd_data,"Key pressed is %c",key);
+			lcd.lcd_send_string(lcd_data);
+		}
+
+	  // Add debounce delay if necessary
+	  HAL_Delay(30);
 
     /* USER CODE END WHILE */
 
@@ -186,6 +211,40 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
 }
 
 /**

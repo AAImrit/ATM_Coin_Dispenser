@@ -21,7 +21,6 @@ Mcu.Pin1=PC14-OSC32_IN
 Mcu.Pin10=PA6
 Mcu.Pin11=PA7
 Mcu.Pin12=PB10
-<<<<<<< HEAD
 Mcu.Pin13=PB12
 Mcu.Pin14=PB13
 Mcu.Pin15=PB14
@@ -29,26 +28,15 @@ Mcu.Pin16=PB15
 Mcu.Pin17=PC6
 Mcu.Pin18=PC7
 Mcu.Pin19=PC8
-=======
-Mcu.Pin13=PA13
-Mcu.Pin14=PA14
-Mcu.Pin15=PB3
-Mcu.Pin16=PB8
-Mcu.Pin17=PB9
-Mcu.Pin18=VP_SYS_VS_Systick
-Mcu.Pin19=VP_TIM2_VS_ClockSourceINT
->>>>>>> branch 'master' of https://github.com/AAImrit/ATM_Coin_Dispenser.git
 Mcu.Pin2=PC15-OSC32_OUT
-<<<<<<< HEAD
 Mcu.Pin20=PA13
 Mcu.Pin21=PA14
 Mcu.Pin22=PB3
-Mcu.Pin23=VP_SYS_VS_Systick
-Mcu.Pin24=VP_TIM2_VS_ClockSourceINT
-Mcu.Pin25=VP_TIM3_VS_ClockSourceINT
-=======
-Mcu.Pin20=VP_TIM3_VS_ClockSourceINT
->>>>>>> branch 'master' of https://github.com/AAImrit/ATM_Coin_Dispenser.git
+Mcu.Pin23=PB8
+Mcu.Pin24=PB9
+Mcu.Pin25=VP_SYS_VS_Systick
+Mcu.Pin26=VP_TIM2_VS_ClockSourceINT
+Mcu.Pin27=VP_TIM3_VS_ClockSourceINT
 Mcu.Pin3=PH0 - OSC_IN
 Mcu.Pin4=PH1 - OSC_OUT
 Mcu.Pin5=PA0-WKUP
@@ -56,11 +44,7 @@ Mcu.Pin6=PA1
 Mcu.Pin7=PA2
 Mcu.Pin8=PA3
 Mcu.Pin9=PA5
-<<<<<<< HEAD
-Mcu.PinsNb=26
-=======
-Mcu.PinsNb=21
->>>>>>> branch 'master' of https://github.com/AAImrit/ATM_Coin_Dispenser.git
+Mcu.PinsNb=28
 Mcu.ThirdPartyNb=0
 Mcu.UserConstants=
 Mcu.UserName=STM32F411RETx
