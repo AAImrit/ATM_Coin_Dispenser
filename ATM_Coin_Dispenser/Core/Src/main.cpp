@@ -148,7 +148,9 @@ int main(void)
 	  //servo_sweep (&cd2);
 	  //cd1.push_coin(5);
 
+	  numPad.numberToDisplay(lcd);
 
+	  /*
 	  key=numPad.keypad_read();
 	  if(key)
 		{
@@ -156,6 +158,7 @@ int main(void)
 			sprintf(lcd_data,"Key pressed is %c",key);
 			lcd.lcd_send_string(lcd_data);
 		}
+	*/
 
 	  // Add debounce delay if necessary
 	  HAL_Delay(30);
