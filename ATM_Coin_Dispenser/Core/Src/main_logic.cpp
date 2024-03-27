@@ -8,11 +8,74 @@
 //#include "main.hpp"
 #include "coindispenser.hpp"
 #include "main_logic.hpp"
+#include <string>
+#include <iostream>
 
 const int DISPENSER_SIZE = 5;
 
-void main_logic() {
+void main_logic(CoinDispenser *dispensers) {
 //main logic and stuff to do in while loop goes here
+
+	//get RFID
+	//getUserInput
+	std::string userInput = "10.10";
+	int userVal = convert_user_input(userInput);
+
+	bool isInputValid = validateUserInput(userVal, dispensers);
+	if (isInputValid) {
+		int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0};
+		bool isDispense = coin_to_dispense(userVal, dispensers, coinDispense);
+
+
+		if (isDispense) {
+			//print something on screen saying it will dispense
+			for (int i=0; i<DISPENSER_SIZE; i++) {
+				if (coinDispense[i] > 0) {
+					dispensers[i].push_coin(coinDispense[i]);
+				}
+			}
+			//print something about finished dispensing
+		} else {
+			//print something about can't dispense and go back to main menu
+		}
+
+	} else {
+		//print something about input not valid
+	}
+
+}
+
+int convert_user_input (std::string userInput) {
+	//for converting user input from a string to a rounded int that can be used for everything else
+	float floatUserInput = std::stof(userInput);
+	int conUserInput = static_cast<int>(floatUserInput*100);
+
+	int lastVal = conUserInput%10;
+	//setting it up so that we always round up no matter what
+	if (lastVal == 0) {
+		return conUserInput;
+	}
+	if (lastVal <=5) {
+		conUserInput = conUserInput + (5-lastVal);
+	} else {
+		conUserInput = conUserInput + (10-lastVal);
+	}
+
+	return conUserInput;
+
+}
+
+bool validateUserInput (int userVal, CoinDispenser *dispensers) {
+	if (userVal > 1000) {
+		return false;
+	}
+
+	int inventorySum = inventory_money(dispensers);
+	if (userVal > inventorySum) {
+		return false;
+	}
+
+	return true;
 }
 
 //user_function ----------------------------------------------------------
