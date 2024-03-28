@@ -9,6 +9,7 @@
 #ifndef INC_COINDISPENSER_HPP_
 #define INC_COINDISPENSER_HPP_
 
+#include <main.hpp>
 #include "stm32f4xx_hal.h"
 #include "main.h"
 

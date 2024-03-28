@@ -9,7 +9,7 @@
   * Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.
   *
-  * This software is licensed under terms that can be found in the LICENSE file
+  * This software is licensed undser terms that can be found in the LICENSE file
   * in the root directory of this software component.
   * If no LICENSE file comes with this software, it is provided AS-IS.
   *
@@ -18,6 +18,11 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "numberpad.hpp"	// number pad object
+#include "coindispenser.hpp" //coin dispenser object
+#include "LCD.hpp"
+#include "i2c.hpp"
+#include <Stdio.h>
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -26,6 +31,9 @@
 #include "main_logic.hpp"
 #include <array>
 #include <iostream>
+// initialize variables
+char lcd_data[30];
+int key;
 
 /* USER CODE END Includes */
 
@@ -45,6 +53,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+I2C_HandleTypeDef hi2c1;
+
 TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 
@@ -61,12 +71,15 @@ static void MX_GPIO_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
+static void MX_I2C1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
 
 /* USER CODE END 0 */
 
@@ -102,6 +115,7 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+  MX_I2C1_Init();
 
   CoinDispenser dispensers[DISPENSER_SIZE]= {CoinDispenser(2, 200, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1}),
   		  CoinDispenser(2, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2}),
@@ -119,6 +133,11 @@ int main(void)
     /* USER CODE END 2 */
 
     /* Infinite loop */
+  // Initiate Objects
+  numberpad numPad;
+  LCD lcd;
+  lcd.lcd_init();
+  numPad.keypad_init();
 
     /* USER CODE BEGIN WHILE */
 	int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0}; //fixed array that can be overwriten to say what we are dispensing
@@ -134,10 +153,28 @@ int main(void)
   	  //servo_sweep (&dispensers[3]);
   	  //dispensers[3].push_coin(3);
   	  //dispensers[4].push_coin(3);
-    }
-  /* USER CODE END WHILE */
 
-  /* USER CODE BEGIN 3 */
+	  numPad.numberToDisplay(lcd);
+
+	  /*
+	  key=numPad.keypad_read();
+	  if(key)
+		{
+			lcd.setCursor(0, 0);
+			sprintf(lcd_data,"Key pressed is %c",key);
+			lcd.lcd_send_string(lcd_data);
+		}
+	*/
+
+	  // Add debounce delay if necessary
+	  HAL_Delay(30);
+
+    /* USER CODE END WHILE */
+
+    /* USER CODE BEGIN 3 */
+  }
+  /* USER CODE END 3 */
+
 }
 /* USER CODE END 3 */
 
@@ -185,6 +222,40 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
 }
 
 /**
@@ -370,6 +441,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, Col1_Pin|Col2_Pin|Col3_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
@@ -382,6 +456,19 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Row1_Pin Row2_Pin Row3_Pin Row4_Pin */
+  GPIO_InitStruct.Pin = Row1_Pin|Row2_Pin|Row3_Pin|Row4_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : Col1_Pin Col2_Pin Col3_Pin */
+  GPIO_InitStruct.Pin = Col1_Pin|Col2_Pin|Col3_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
