@@ -18,7 +18,7 @@ void main_logic(CoinDispenser *dispensers) {
 
 	//get RFID
 	//getUserInput
-	std::string userInput = "10.10";
+	std::string userInput = "02.50";
 	int userVal = convert_user_input(userInput);
 
 	bool isInputValid = validateUserInput(userVal, dispensers);

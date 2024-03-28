@@ -78,7 +78,7 @@ void CoinDispenser::push_coin(int amount) {
 	 */
 
 	for (amount; amount > 0; amount--) {
-		servo_write(80);
+		servo_write(70);
 		HAL_Delay(200);
 		servo_write(180); //restore to original position
 		HAL_Delay(250);

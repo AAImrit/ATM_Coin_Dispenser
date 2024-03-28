@@ -18,7 +18,7 @@
 //extern const int DISPENSER_SIZE; //constant value cuz we have 5 coin dispensers
 
 //Declare functions:
-void main_logic(CoinDispenser *dispensers, int DISPENSER_SIZE);
+void main_logic(CoinDispenser *dispensers);
 int inventory_money (CoinDispenser *dispensers);
 bool coin_to_dispense (int userValue, CoinDispenser *dispensers, int *coinDispense);
 void servo_sweep (CoinDispenser* cd);
