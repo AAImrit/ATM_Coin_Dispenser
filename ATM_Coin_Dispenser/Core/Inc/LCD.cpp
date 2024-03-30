@@ -75,6 +75,9 @@ void LCD::lcd_send_data(char data)
 
 void LCD::setCursor(int a, int b)
 {
+	// a represents distance from LHS
+	// b represents the LCD row
+
 	int i=0;
 	switch(b){
 	case 0:lcd_send_cmd(0x80);break;

@@ -31,9 +31,7 @@
 #include "main_logic.hpp"
 #include <array>
 #include <iostream>
-// initialize variables
-char lcd_data[30];
-int key;
+
 
 /* USER CODE END Includes */
 
@@ -126,24 +124,26 @@ int main(void)
 
     //starting PWM channel for the coin dispensers
 
+  	/*
     for (int i = 0; i < DISPENSER_SIZE; i++) {
   	  dispensers[i].start_PMW();
     }
+    */
+
+	// Initiate Objects - will be passed to main_logic function
+	numberpad numPad;
+	LCD lcd;
+	lcd.lcd_init();
+	numPad.keypad_init();
 
     /* USER CODE END 2 */
 
     /* Infinite loop */
-  // Initiate Objects
-  numberpad numPad;
-  LCD lcd;
-  lcd.lcd_init();
-  numPad.keypad_init();
-
     /* USER CODE BEGIN WHILE */
 	int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0}; //fixed array that can be overwriten to say what we are dispensing
     while (1) {
 
-    	main_logic(dispensers);
+    	main_logic(dispensers, numPad, lcd);
 
   	  //servo_sweep (&dispensers[1]);
   	  //dispensers[1].push_coin(3);
@@ -154,7 +154,7 @@ int main(void)
   	  //dispensers[3].push_coin(3);
   	  //dispensers[4].push_coin(3);
 
-	  numPad.numberToDisplay(lcd);
+	  //numPad.numberToDisplay(lcd);
 
 	  /*
 	  key=numPad.keypad_read();

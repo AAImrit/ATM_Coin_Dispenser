@@ -158,11 +158,10 @@ const char* numberpad::numberToDisplay(LCD lcd)
 		// return string which indicates to go back to main menu OR change return type
 
 	char value[] = "0000";	// add decimal before sending to display
-	//int count = 0;			// keep track of how many valid numbers pressed, to ensure don't exceed (hit max before stop updating)
 	char lcd_data[30];
 
 	char keyPressed;
-	char displayValue[5];
+	static char displayValue[5];
 
 	while (true) {	// change to timeout for conditional
 		// get initial value
@@ -177,44 +176,30 @@ const char* numberpad::numberToDisplay(LCD lcd)
 
 		//
 		if ((keyPressed != '*') and (keyPressed != '#') ){
+			// move characters to left
+			memmove(value, value+1, strlen(value));
 
-			// increase count for valid input
-			// count ++;
+			// add new character to the end
+			value[3] = keyPressed;
 
-			// update display
-			//if (count < 5){
-
-				// move characters to left
-				memmove(value, value+1, strlen(value));
-
-				// add new character to the end
-				value[3] = keyPressed;
-
-				// create copy of string and add decimal in between
-				strcpy(displayValue, value);
-				memmove(displayValue+2+1, displayValue+2, strlen(displayValue)-2+1);
-				displayValue[2] = '.';
+			// create copy of string and add decimal in between
+			strcpy(displayValue, value);
+			memmove(displayValue+2+1, displayValue+2, strlen(displayValue)-2+1);
+			displayValue[2] = '.';
 
 
-				// send string to LCD to update display
-				lcd.setCursor(0, 0);
-				sprintf(lcd_data, displayValue);
-				lcd.lcd_send_string(lcd_data);
-
-//			}
-
-
-			// else do nothing, unless we want to put a warning message :( but im assuming that the user will get it
+			// send string to LCD to update display
+			lcd.setCursor(0, 0);
+			sprintf(lcd_data, displayValue);
+			lcd.lcd_send_string(lcd_data);
 		}
 
 		else if (keyPressed == '#'){
 			// check to make sure non zero
-			return value;
+
+			return displayValue;
 		}
 
-		else{
-			//maybe backspace with *
-		}
 	}
 
 }

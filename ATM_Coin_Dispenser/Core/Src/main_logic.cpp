@@ -7,26 +7,55 @@
 #include "stm32f4xx_hal.h"
 //#include "main.hpp"
 #include "coindispenser.hpp"
+#include "numberpad.hpp"
+#include "LCD.hpp"
 #include "main_logic.hpp"
-#include <string>
+#include <stdlib.h>
 #include <iostream>
+#include <string.h>
 
 const int DISPENSER_SIZE = 5;
 
-void main_logic(CoinDispenser *dispensers) {
+// initialize variables
+char lcd_data[30];
+int key;
+
+void main_logic(CoinDispenser *dispensers, numberpad numPad, LCD lcd) {
 //main logic and stuff to do in while loop goes here
 	// LCD Main Page
 
 	// LCD Insert Card
 	//get RFID
 
+	// get the user input from number pad
+	const char* userInput = numPad.numberToDisplay(lcd);
 	// LCD Input Withdrawal Amount
-	//getUserInput - from Number Pad, include a timeout
-	std::string userInput = "2.5";
 
-	// LCD Display - Calculating...
+	lcd.lcd_clear();
+	lcd.setCursor(3, 1);
+	sprintf(lcd_data, "Calculating...");
+	lcd.lcd_send_string(lcd_data);
+	HAL_Delay(1000);
+
 	// convert the input into an integer
 	int userVal = convert_user_input(userInput);
+
+	// Display rounded value to be returned - have to convert userVal back into a string
+	// NEEDS WORK BC THE DECIMAL NEEDS TO BE PLACED DEPENDING ON THE ORIGINAL INT VALUE
+	// GO BACK TO ORGINAL METHOD OF DIVIDING INT BY 100 AND THEN CONVERTING TO STRING
+	char temp[4];
+	char userValDisplay[5];
+	sprintf(temp,"%ld", userVal);
+	strcpy(userValDisplay, temp);
+	memmove(userValDisplay+2+1, userValDisplay+2, strlen(userValDisplay)-2+1);
+	userValDisplay[2] = '.';
+
+	lcd.lcd_clear();
+	lcd.setCursor(0, 0);
+	sprintf(lcd_data, "Dispensing: $%s", userValDisplay);
+	lcd.lcd_send_string(lcd_data);
+	HAL_Delay(1000);
+
 
 	// check if the user input is valid (under ATM inventory amount)
 	bool isInputValid = validateUserInput(userVal, dispensers);
@@ -59,11 +88,12 @@ void main_logic(CoinDispenser *dispensers) {
 
 }
 
-int convert_user_input (std::string userInput) {
+//int convert_user_input (std::string userInput) {
+int convert_user_input (const char* userInput) {
 	// for converting user input from a string to a rounded int that can be used for everything else
 
 	// convert string into a float (decimal)
-	float floatUserInput = std::stof(userInput);
+	float floatUserInput = atof(userInput);
 
 	// multiply 100 to remove decimal and convert to int
 	int conUserInput = static_cast<int>(floatUserInput*100);
