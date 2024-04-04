@@ -11,7 +11,7 @@
 #define INC_LCD_HPP_
 
 
-#include <main.hpp>
+#include <main.h>
 #include "stm32f4xx_hal.h"
 #include <stdint.h>
 #include <i2c.hpp>

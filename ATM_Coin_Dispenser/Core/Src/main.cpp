@@ -134,12 +134,13 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+	int state = 2;
   while (1)
   {
     /* USER CODE END WHILE */
 
-	  main_logic(dispensers, numPad, lcd);
-	  int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0};
+	  state = state_machine(state, dispensers, numPad, lcd);
+	  //int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0};
 
 	  //servo_sweep (&dispensers[1]);
 	  //dispensers[1].push_coin(3);

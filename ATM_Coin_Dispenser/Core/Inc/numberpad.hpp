@@ -9,7 +9,7 @@
 #define INC_NUMBERPAD_HPP_
 
 #include "stm32f4xx_hal.h"
-#include <main.hpp>
+#include <main.h>
 #include <LCD.hpp>
 
 class numberpad {
