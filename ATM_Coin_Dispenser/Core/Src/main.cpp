@@ -9,7 +9,7 @@
   * Copyright (c) 2024 STMicroelectronics.
   * All rights reserved.
   *
-  * This software is licensed undser terms that can be found in the LICENSE file
+  * This software is licensed under terms that can be found in the LICENSE file
   * in the root directory of this software component.
   * If no LICENSE file comes with this software, it is provided AS-IS.
   *
@@ -18,20 +18,17 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
 #include "numberpad.hpp"	// number pad object
 #include "coindispenser.hpp" //coin dispenser object
 #include "LCD.hpp"
 #include "i2c.hpp"
 #include <Stdio.h>
-
-/* Private includes ----------------------------------------------------------*/
-/* USER CODE BEGIN Includes */
-//#include "main.hpp"
-#include "coindispenser.hpp"
 #include "main_logic.hpp"
 #include <array>
 #include <iostream>
-
 
 /* USER CODE END Includes */
 
@@ -59,6 +56,7 @@ TIM_HandleTypeDef htim3;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+
 extern const int DISPENSER_SIZE = 5;
 
 /* USER CODE END PV */
@@ -76,8 +74,6 @@ static void MX_I2C1_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-/* USER CODE END 0 */
 
 /* USER CODE END 0 */
 
@@ -112,23 +108,21 @@ int main(void)
   MX_USART2_UART_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
-  /* USER CODE BEGIN 2 */
   MX_I2C1_Init();
 
+  /* USER CODE BEGIN 2 */
   CoinDispenser dispensers[DISPENSER_SIZE]= {CoinDispenser(2, 200, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_1, 1}),
-  		  CoinDispenser(2, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2}),
-  		  CoinDispenser(2, 25, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_3, 3}),
-  		  CoinDispenser(2, 10, (servo){0, 180, 50, 250, &htim3, TIM_CHANNEL_1, 1}),
-  		  CoinDispenser(3, 5, (servo){0, 180, 50, 250, &htim3, TIM_CHANNEL_2, 2})
+  		  CoinDispenser(3, 100, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_2, 2}),
+  		  CoinDispenser(4, 25, (servo){0, 180, 50, 250, &htim2, TIM_CHANNEL_3, 3}),
+  		  CoinDispenser(0, 10, (servo){0, 180, 50, 250, &htim3, TIM_CHANNEL_1, 1}),
+  		  CoinDispenser(5, 5, (servo){0, 180, 50, 250, &htim3, TIM_CHANNEL_2, 2})
     };
 
-    //starting PWM channel for the coin dispensers
 
-  	/*
-    for (int i = 0; i < DISPENSER_SIZE; i++) {
-  	  dispensers[i].start_PMW();
-    }
-    */
+  for (int i = 0; i < DISPENSER_SIZE; i++) {
+	  dispensers[i].start_PMW();
+  }
+
 
 	// Initiate Objects - will be passed to main_logic function
 	numberpad numPad;
@@ -136,47 +130,36 @@ int main(void)
 	lcd.lcd_init();
 	numPad.keypad_init();
 
-    /* USER CODE END 2 */
+  /* USER CODE END 2 */
 
-    /* Infinite loop */
-    /* USER CODE BEGIN WHILE */
-	int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0}; //fixed array that can be overwriten to say what we are dispensing
-    while (1) {
+  /* Infinite loop */
+  /* USER CODE BEGIN WHILE */
+  while (1)
+  {
+    /* USER CODE END WHILE */
 
-    	main_logic(dispensers, numPad, lcd);
+	  main_logic(dispensers, numPad, lcd);
+	  int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0};
 
-  	  //servo_sweep (&dispensers[1]);
-  	  //dispensers[1].push_coin(3);
-  	  //dispensers[0].push_coin(5);
+	  //servo_sweep (&dispensers[1]);
+	  //dispensers[1].push_coin(3);
+	  //dispensers[0].push_coin(5);
 
-  	  //servo_sweep (&dispensers[2]);
-  	  //servo_sweep (&dispensers[3]);
-  	  //dispensers[3].push_coin(3);
-  	  //dispensers[4].push_coin(3);
+	  //servo_sweep (&dispensers[2]);
+	  //dispensers[2].push_coin(2);
+	  //servo_sweep (&dispensers[3]);
+	  //dispensers[3].push_coin(3);
+	  //dispensers[4].push_coin(3);
 
 	  //numPad.numberToDisplay(lcd);
 
-	  /*
-	  key=numPad.keypad_read();
-	  if(key)
-		{
-			lcd.setCursor(0, 0);
-			sprintf(lcd_data,"Key pressed is %c",key);
-			lcd.lcd_send_string(lcd_data);
-		}
-	*/
-
 	  // Add debounce delay if necessary
-	  HAL_Delay(30);
-
-    /* USER CODE END WHILE */
+	  //HAL_Delay(30);
 
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
-
 }
-/* USER CODE END 3 */
 
 /**
   * @brief System Clock Configuration

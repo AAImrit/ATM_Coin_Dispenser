@@ -18,32 +18,20 @@ Mcu.Name=STM32F411R(C-E)Tx
 Mcu.Package=LQFP64
 Mcu.Pin0=PC13-ANTI_TAMP
 Mcu.Pin1=PC14-OSC32_IN
-<<<<<<< HEAD
 Mcu.Pin10=PB10
-Mcu.Pin11=PA13
-Mcu.Pin12=PA14
-Mcu.Pin13=PB3
-Mcu.Pin14=PB4
-Mcu.Pin15=PB5
-Mcu.Pin16=VP_SYS_VS_Systick
-Mcu.Pin17=VP_TIM2_VS_ClockSourceINT
-Mcu.Pin18=VP_TIM3_VS_ClockSourceINT
-=======
-Mcu.Pin10=PA6
-Mcu.Pin11=PA7
-Mcu.Pin12=PB10
-Mcu.Pin13=PB12
-Mcu.Pin14=PB13
-Mcu.Pin15=PB14
-Mcu.Pin16=PB15
-Mcu.Pin17=PC6
-Mcu.Pin18=PC7
-Mcu.Pin19=PC8
->>>>>>> refs/remotes/origin/master
+Mcu.Pin11=PB12
+Mcu.Pin12=PB13
+Mcu.Pin13=PB14
+Mcu.Pin14=PB15
+Mcu.Pin15=PC6
+Mcu.Pin16=PC7
+Mcu.Pin17=PC8
+Mcu.Pin18=PA13
+Mcu.Pin19=PA14
 Mcu.Pin2=PC15-OSC32_OUT
-Mcu.Pin20=PA13
-Mcu.Pin21=PA14
-Mcu.Pin22=PB3
+Mcu.Pin20=PB3
+Mcu.Pin21=PB4
+Mcu.Pin22=PB5
 Mcu.Pin23=PB8
 Mcu.Pin24=PB9
 Mcu.Pin25=VP_SYS_VS_Systick
@@ -127,19 +115,16 @@ PB3.GPIOParameters=GPIO_Label
 PB3.GPIO_Label=SWO
 PB3.Locked=true
 PB3.Signal=SYS_JTDO-SWO
-<<<<<<< HEAD
 PB4.Locked=true
 PB4.Signal=S_TIM3_CH1
 PB5.Locked=true
 PB5.Signal=S_TIM3_CH2
-=======
 PB8.Locked=true
 PB8.Mode=I2C
 PB8.Signal=I2C1_SCL
 PB9.Locked=true
 PB9.Mode=I2C
 PB9.Signal=I2C1_SDA
->>>>>>> refs/remotes/origin/master
 PC13-ANTI_TAMP.GPIOParameters=GPIO_Label,GPIO_ModeDefaultEXTI
 PC13-ANTI_TAMP.GPIO_Label=B1 [Blue PushButton]
 PC13-ANTI_TAMP.GPIO_ModeDefaultEXTI=GPIO_MODE_IT_FALLING
@@ -203,11 +188,7 @@ ProjectManager.ToolChainLocation=
 ProjectManager.UAScriptAfterPath=
 ProjectManager.UAScriptBeforePath=
 ProjectManager.UnderRoot=true
-<<<<<<< HEAD
-ProjectManager.functionlistsort=1-SystemClock_Config-RCC-false-HAL-false,2-MX_GPIO_Init-GPIO-false-HAL-true,3-MX_USART2_UART_Init-USART2-false-HAL-true,4-MX_TIM2_Init-TIM2-false-HAL-true,5-MX_TIM4_Init-TIM4-false-HAL-true
-=======
 ProjectManager.functionlistsort=1-SystemClock_Config-RCC-false-HAL-false,2-MX_GPIO_Init-GPIO-false-HAL-true,3-MX_USART2_UART_Init-USART2-false-HAL-true,4-MX_TIM2_Init-TIM2-false-HAL-true,5-MX_TIM3_Init-TIM3-false-HAL-true,6-MX_I2C1_Init-I2C1-false-HAL-true
->>>>>>> refs/remotes/origin/master
 RCC.48MHZClocksFreq_Value=32000000
 RCC.AHBFreq_Value=64000000
 RCC.APB1CLKDivider=RCC_HCLK_DIV8
@@ -264,7 +245,7 @@ TIM2.Pulse-PWM\ Generation2\ CH2=50
 TIM2.Pulse-PWM\ Generation3\ CH3=50
 TIM3.Channel-PWM\ Generation1\ CH1=TIM_CHANNEL_1
 TIM3.Channel-PWM\ Generation2\ CH2=TIM_CHANNEL_2
-TIM3.IPParameters=Channel-PWM Generation1 CH1,Channel-PWM Generation2 CH2,Prescaler,Period,Pulse-PWM Generation2 CH2,Pulse-PWM Generation1 CH1
+TIM3.IPParameters=Prescaler,Period,Channel-PWM Generation1 CH1,Channel-PWM Generation2 CH2,Pulse-PWM Generation2 CH2,Pulse-PWM Generation1 CH1
 TIM3.Period=2000
 TIM3.Prescaler=160
 TIM3.Pulse-PWM\ Generation1\ CH1=50
