@@ -9,6 +9,8 @@
 #include "stm32f4xx_hal.h"
 #include "LCD.hpp"
 #include <string.h>
+#include <stdlib.h>
+
 
 
 //#define ROW_COUNT 4
@@ -136,32 +138,13 @@ char numberpad::decode_keypad(uint8_t col, uint8_t row)
 
 
 // collect user input and continuously display on LCD
-const char* numberpad::numberToDisplay(LCD lcd)
+int numberpad::numberToDisplay(LCD lcd)
 {
-	// LOGIC
-	// define a default string "00.00"
-
-	// initiate keyPressed variable
-
-	// while (timeout not met)
-		// get key pressed
-		// update string if number
-		// update LCD display
-
-		// if confirmed pressed
-			// do we need to check for a nonzero value and redirect user to while loop if zero
-			// return string to be passed onto LCD display
-
-	//else if timeout occurred
-		// MAYBE display a warning
-		// cancel transaction, and go back to main menu
-		// return string which indicates to go back to main menu OR change return type
-
+	// Initiate variables
 	char value[] = "0000";	// add decimal before sending to display
 	char lcd_data[30];
-
 	char keyPressed;
-	static char displayValue[5];
+	char displayValue[5];
 
 	while (true) {	// change to timeout for conditional
 		// get initial value
@@ -187,31 +170,99 @@ const char* numberpad::numberToDisplay(LCD lcd)
 			memmove(displayValue+2+1, displayValue+2, strlen(displayValue)-2+1);
 			displayValue[2] = '.';
 
+			// LCD
+			char line[20];
+			strcpy(line, "$");
+			strcat(line, displayValue);
 
-			// send string to LCD to update display
-			lcd.setCursor(0, 0);
-			sprintf(lcd_data, displayValue);
-			lcd.lcd_send_string(lcd_data);
+			char* errorMessage = "";
+			char* LCDAmount[4] = {"Enter Amount", line, "Press # to Continue", "Press * to Cancel"};
+			lcd.lcd_write_message(false, errorMessage, LCDAmount);
 		}
 
 		else if (keyPressed == '#'){
-			// check to make sure non zero
+			// convert string into a float (decimal)
+			float floatVal = atof(displayValue);
 
-			return displayValue;
+			// multiply by 100 and then convert to int
+			int userInput = static_cast<int>(floatVal*100);
+			return userInput;
 		}
 
+		else if (keyPressed == '*'){
+			return 100000;
+		}
 	}
-
 }
 
 // checks if confirm button was pressed
 bool numberpad::isConfirm()
 {
+	// get key value
+	char keyPressed = keypad_read();
 
+	// if confirm button pressed, return true
+	if (keyPressed == '#'){
+		return true;
+	}
+
+	// else, return false
+	return false;
 }
 
-// checks if cancel button was pressed
-bool numberpad::isCancel()
+int numberpad::getPin(LCD lcd, char* errorMessage)
 {
+	// want to display * in place of the pin but return the actual pin value as const char*
+
+	// Initiate variables
+	char pin[] = "    ";
+	char hiddenPin[] = "    ";
+	char keyPressed;
+	int count = 0;
+
+	while (true) {	// change to timeout for conditional
+		// get initial value
+		keyPressed = keypad_read();
+		HAL_Delay(100);
+
+		// wait until get a nonzero keyPressed value
+		while (keyPressed == 0){
+			keyPressed = keypad_read();
+			HAL_Delay(100);
+		}
+
+		//
+		if ((count < 4) and (keyPressed != '*') and (keyPressed != '#') ){
+			// increase count
+			count += 1;
+
+			// move characters to left
+			memmove(pin, pin+1, strlen(pin));
+			memmove(hiddenPin, hiddenPin+1, strlen(hiddenPin));
+
+			// add new character to the end
+			pin[3] = keyPressed;
+			hiddenPin[3] = '*';
+
+
+			// update LCD
+			char* LCDPin[4] = {"Enter Pin", hiddenPin, "Press # to Continue", "Press * to Cancel"};
+			lcd.lcd_write_message(false, errorMessage, LCDPin);
+		}
+
+		else if (keyPressed == '#'){
+			// convert string into a float (decimal)
+			float pinFloat = atof(pin);
+
+			// convert to int
+			int pinInteger = static_cast<int>(pinFloat);
+			return pinInteger;
+		}
+
+		else if (keyPressed == '*'){
+			return 0;
+		}
+	}
 
 }
+

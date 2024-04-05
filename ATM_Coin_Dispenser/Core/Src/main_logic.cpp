@@ -3,254 +3,299 @@
  * purpose: for the main logic of the program so it doesn't get overwritten?
  */
 
-
+// HEADER FILES
 #include "stm32f4xx_hal.h"
-//#include "main.hpp"
 #include "coindispenser.hpp"
 #include "numberpad.hpp"
 #include "LCD.hpp"
 #include "main_logic.hpp"
+
+// ADDED LIBRARIES
 #include <stdlib.h>
 #include <iostream>
 #include <string.h>
 
+// Initialize variables
 const int DISPENSER_SIZE = 5;
-
-// initialize variables
 char lcd_data[30];
 int key;
-int prev_state = 0;
+int globalPreviousState = 0;
 std::string error_msg = "";
 
 
-int state_machine(int state, CoinDispenser *dispensers, numberpad numPad, LCD lcd ) {
+int stateMachine(int state, CoinDispenser *dispensers, numberpad numPad, LCD lcd) {
 	switch (state) {
-	case 0: //start page
 
-		//LCD display
-		//buttonPress = isConfirm();
+		// START PAGE
+		case 0:
+		{
+			// LCD
+			char* errMessageStart = "";
+			char* LCDStartPage[4] = {"", "Welcome", "Press # To Start", ""};
+			lcd.lcd_write_message(true, errMessageStart, LCDStartPage);
 
-		//while (buttonPress != true){
-			//buttonPress = isConfirm();
-		//}
+			// wait for the confirm button to be pressed
+			bool buttonPress = numPad.isConfirm();
 
-		prev_state = 0;
-		return 1;
-
-	case 1: //Enter pin page
-
-		// get the pin - call function
-		// if the prev_state == 1, now the first line display error message
-
-
-		// check if valid
-//		prev_state = 1;
-//		if (userPin != validPin) {
-//			error_msg = "Invalid Pin";
-//			return 1; //retry page
-//		}
-
-		return 2;
-		break;
-
-	case 2: //Getting amount
-		//Enter amount
-		const char* userInput = numPad.numberToDisplay(lcd);
-
-		// LCD Input Withdrawal Amount
-		lcd.lcd_clear();
-		lcd.setCursor(3, 1);
-		sprintf(lcd_data, "Calculating...");
-		lcd.lcd_send_string(lcd_data);
-		HAL_Delay(1000);
-
-		int userVal = convert_user_input(userInput);
-
-		prev_state = 2;
-		bool isInputValid = validateUserInput(userVal, dispensers);
-
-		if (!isInputValid) {
-			return 2;
-		}
-
-		// initiate variable to hold number of coins required for each type
-		int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0}; //
-
-		// getting number of coins required for each type
-		bool isDispense = coin_to_dispense(userVal, dispensers, coinDispense);
-
-		if (!isDispense) {
-			error_msg = "not enough coin";
-			return 2;
-		}
-
-		// Display rounded value to be returned - have to convert userVal back into a string
-		// NEEDS WORK BC THE DECIMAL NEEDS TO BE PLACED DEPENDING ON THE ORIGINAL INT VALUE
-		// GO BACK TO ORGINAL METHOD OF DIVIDING INT BY 100 AND THEN CONVERTING TO STRING
-		char temp[4];
-		char userValDisplay[5];
-		sprintf(temp,"%ld", userVal);
-		strcpy(userValDisplay, temp);
-		memmove(userValDisplay+2+1, userValDisplay+2, strlen(userValDisplay)-2+1);
-		userValDisplay[strlen(userValDisplay) - 2] = '.';
-
-		/*
-					char temp[10];
-		float test = (float)userVal/100.00;
-
-		//char userValDisplay[5];
-		sprintf(temp, "%f", test);
-		//strcpy(userValDisplay, temp);
-		//memmove(userValDisplay+2+1, userValDisplay+2, strlen(userValDisplay)-2+1);
-		//userValDisplay[strlen(userValDisplay) - 3] = '.';
-		const char* test2 = temp;
-		 */
-
-		lcd.lcd_clear();
-		lcd.setCursor(0, 0);
-		sprintf(lcd_data, "Dispensing: $%s", userValDisplay);
-		lcd.lcd_send_string(lcd_data);
-		HAL_Delay(1000);
-
-		// if the ATM can return the amount
-		// LCD Display - Dispensing... specify the amount dispensed for each type
-		for (int i=0; i<DISPENSER_SIZE; i++) {
-			if (coinDispense[i] > 0) {
-				dispensers[i].push_coin(coinDispense[i]);
+			// ADD - Timeout
+			while (buttonPress != true){
+				buttonPress = numPad.isConfirm();
 			}
+
+			// set the previous state to the current one
+			globalPreviousState = 0;
+
+			// return state 1 (move on to next case)
+			return 1;
 		}
 
-		//Lcd diplay for finish dipensing
 
-		return 2;
-	} //end of cases
-}
-/*
-void main_logic(CoinDispenser *dispensers, numberpad numPad, LCD lcd) {
-//main logic and stuff to do in while loop goes here
-	// LCD Main Page
+		// ENTER PIN
+		case 1:
+		{
+			// LCD
+			char* errMessagePin = "";
 
-	// LCD Insert Card
-	//get RFID
+			// display error message if user inputed wrong pin (been through case 1 before)
+			if (globalPreviousState == 1){
+				errMessagePin = "Invalid: ";
+			}
 
-	// get the user input from number pad
-	const char* userInput = numPad.numberToDisplay(lcd);
-	// LCD Input Withdrawal Amount
-
-	lcd.lcd_clear();
-	lcd.setCursor(3, 1);
-	sprintf(lcd_data, "Calculating...");
-	lcd.lcd_send_string(lcd_data);
-	HAL_Delay(1000);
-
-	// convert the input into an integer
-	int userVal = convert_user_input(userInput);
-
-	// Display rounded value to be returned - have to convert userVal back into a string
-	// NEEDS WORK BC THE DECIMAL NEEDS TO BE PLACED DEPENDING ON THE ORIGINAL INT VALUE
-	// GO BACK TO ORGINAL METHOD OF DIVIDING INT BY 100 AND THEN CONVERTING TO STRING
-	char temp[4];
-	char userValDisplay[5];
-	sprintf(temp,"%ld", userVal);
-	strcpy(userValDisplay, temp);
-	memmove(userValDisplay+2+1, userValDisplay+2, strlen(userValDisplay)-2+1);
-	userValDisplay[2] = '.';
-
-	lcd.lcd_clear();
-	lcd.setCursor(0, 0);
-	sprintf(lcd_data, "Dispensing: $%s", userValDisplay);
-	lcd.lcd_send_string(lcd_data);
-	HAL_Delay(1000);
+			char* LCDPin[4] = {"Enter Pin", "", "Press # to Continue", "Press * to Cancel"};
+			lcd.lcd_write_message(true, errMessagePin, LCDPin);
 
 
-	// check if the user input is valid (under ATM inventory amount)
-	bool isInputValid = validateUserInput(userVal, dispensers);
+			// get the user pin
+			int pin = numPad.getPin(lcd, errMessagePin);
 
-	// if the user input is valid
-	if (isInputValid) {
+			// checking if cancel or pin is valid (matches internal password)
+			if (pin != 1234){
 
-		// initiate variable to hold number of coins required for each type
-		int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0};
+				// check for cancel
+				if (pin == 0){
+					// return to start page
+					return 0;
+				}
 
-		// getting number of coins required for each type
-		bool isDispense = coin_to_dispense(userVal, dispensers, coinDispense);
+				// set the previous state to the current one
+				globalPreviousState = 1;
 
-		// if the ATM can return the amount
-		if (isDispense) {
-			// LCD Display - Dispensing... specify the amount dispensed for each type
+				// return to current state
+				return 1;
+			}
+
+
+			// set the previous state to the current one
+			globalPreviousState = 1;
+
+			// return state 2 (move on to next case)
+			return 2;
+		}
+
+
+		// ENTER AMOUNT & DISPENSING
+		case 2:
+		{
+
+			// GETTING USER INPUT
+			// LCD - Enter Amount
+			char* errMessageDispense = "";
+			char* LCDAmount[4] = {"Enter Amount", "$00.00", "Press # to Continue", "Press * to Cancel"};
+			lcd.lcd_write_message(true, errMessageDispense, LCDAmount);
+
+			// get withdrawal amount and convert to int
+			int userInput = numPad.numberToDisplay(lcd);
+
+			// check for cancel
+			if (userInput == 100000){
+				// return to start page
+				return 0;
+			}
+
+			// round input
+			int userVal = roundUserInput(userInput);
+
+			// check if input is valid
+			int isInputValid = validateUserInput(userVal, dispensers);
+
+			if (isInputValid != 1){
+				// Error #1 - User Enters Blank Value
+				if (isInputValid == 100000){
+					char* LCDError1[4] = {"Error: Zero Amount", "", "Enter Value > $00.00", "Press # to Retry"};
+					lcd.lcd_write_message(true, errMessageDispense, LCDError1);
+				}
+
+				// Error #2 - User Enters Amount Exceeding Inventory, Display the Amount
+				else{
+					// convert int into a string
+					char floatString[100];
+					sprintf(floatString, "%d", isInputValid);
+
+					int length = strlen(floatString);
+
+					// adding zeroes to beginning of string to ensure correct decimal placement
+					if (length < 4){
+						int diff = 4-length;
+						for (int i = 0; i < diff; i++){
+							memmove(floatString+1, floatString, ++length);
+							*floatString = '0';
+						}
+					}
+
+					// add the decimal
+					int position = strlen(floatString) - 2;
+					memmove(floatString+position+1, floatString+position, strlen(floatString)-position+1);
+					floatString[position] = '.';
+
+					// concatenate the inventory amount with message
+					char line[20];
+					strcpy(line, "Enter Value < $");
+					strcat(line, floatString);
+
+					// send to LCD
+					char* LCDError2[4] = {"Error: Low Inventory", "", line, "Press # to Retry"};
+					lcd.lcd_write_message(true, errMessageDispense, LCDError2);
+				}
+
+				// wait for the confirm button to be pressed
+				bool buttonPress = numPad.isConfirm();
+
+				// ADD - Timeout
+				while (buttonPress != true){
+					buttonPress = numPad.isConfirm();
+				}
+
+				// return to current state
+				return 2;
+			}
+
+			// DISPENSING
+
+			// initiate variable to hold number of coins required for each type
+			int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0};
+
+			// get number of coins required for each type
+			bool isDispense = coinToDispense(userVal, dispensers, coinDispense);
+
+			char line[20];
+			sprintf(line, "%dT %dL %dQ %dD %d5", coinDispense[0], coinDispense[1], coinDispense[2], coinDispense[3], coinDispense[4]);
+
+			if (!isDispense) {
+				char* LCDError3[4] = {"Not Enough Coins!", "Current Inventory:", line, "Press # to Retry"};
+				lcd.lcd_write_message(true, errMessageDispense, LCDError3);
+
+				// wait for the confirm button to be pressed
+				bool buttonPress = numPad.isConfirm();
+
+				// ADD - Timeout
+				while (buttonPress != true){
+					buttonPress = numPad.isConfirm();
+				}
+
+				// return to current state
+				return 2;
+			}
+
+
+			// if the ATM can return the amount
+
+			// SHOULD TURN INTO FUNCTION
+			// convert int into a string
+			char floatString[100];
+			sprintf(floatString, "%d", userVal);
+
+			int length = strlen(floatString);
+
+			// adding zeroes to beginning of string to ensure correct decimal placement
+			if (length < 4){
+				int diff = 4-length;
+				for (int i = 0; i < diff; i++){
+					memmove(floatString+1, floatString, ++length);
+					*floatString = '0';
+				}
+			}
+
+			// add the decimal
+			int position = strlen(floatString) - 2;
+			memmove(floatString+position+1, floatString+position, strlen(floatString)-position+1);
+			floatString[position] = '.';
+
+			// concatenate the inventory amount with message
+			char dispenseLine[20];
+			strcpy(dispenseLine, "Dispensing: $");
+			strcat(dispenseLine, floatString);
+
+			// LCD - Dispensing
+			char* LCDDispense[4] = {"", dispenseLine, line, ""};
+			lcd.lcd_write_message(true, errMessageDispense, LCDDispense);
+
+			// Dispensing Coins
 			for (int i=0; i<DISPENSER_SIZE; i++) {
 				if (coinDispense[i] > 0) {
 					dispensers[i].push_coin(coinDispense[i]);
 				}
 			}
-			//print something about finished dispensing
-		} else {
-			//print something about can't dispense and go back to main menu
+
+			// LCD - Complete Transaction
+			char* LCDComplete[4] = {"Transaction Complete", "Please Pick Up", "Your Coins", ""};
+			lcd.lcd_write_message(true, errMessageDispense, LCDComplete);
+
+			// Added a time delay, can change this
+			HAL_Delay(5000);
+
+			return 0;
 		}
-
-	} else {
-		//print something about input not valid
 	}
-
 }
-*/
 
-//int convert_user_input (std::string userInput) {
-int convert_user_input (const char* userInput) {
-	// for converting user input from a string to a rounded int that can be used for everything else
 
-	// convert string into a float (decimal)
-	float floatUserInput = atof(userInput);
-
-	// multiply 100 to remove decimal and convert to int
-	int conUserInput = static_cast<int>(floatUserInput*100);
+int roundUserInput (int userInput) {
+	// for rounding user input upwards to 5 cents multiple
 
 	// get the last digit from the value, from the remainder of modulus operation
-	int lastVal = conUserInput%10;
+	int lastVal = userInput%10;
 
 	// setting it up so that we always round up to the nearest 5 cents no matter what
 	// round up because want to give the user more than they need, not less
 	if (lastVal == 0)
 	{
 		// no rounding required
-		return conUserInput;
+		return userInput;
 	}
 
 	if (lastVal <=5)
 	{
 		// round to 5
-		conUserInput = conUserInput + (5-lastVal);
+		userInput = userInput + (5-lastVal);
 	}
 
 	else
 	{
 		// round to 10
-		conUserInput = conUserInput + (10-lastVal);
+		userInput = userInput + (10-lastVal);
 	}
 
-	return conUserInput;
+	return userInput;
 }
 
-bool validateUserInput (int userVal, CoinDispenser *dispensers) {
+int validateUserInput (int userVal, CoinDispenser *dispensers) {
 	// check if user input is greater than ATM limit - $10.00 = 1000
 	if (userVal == 0) {
-		error_msg= "Empty";
-		return false;
+		return 100000;
 	}
 
 	// checks if user input is greater than the ATM inventory
-	int inventorySum = inventory_money(dispensers);
+	int inventorySum = inventoryMoney(dispensers);
 	if (userVal > inventorySum) {
-		error_msg= "request > " + std::to_string(inventorySum); //trying to
-		return false;
+		return inventorySum;
 	}
 
 
-	return true;
+	return 1;
 }
 
 //user_function ----------------------------------------------------------
-int inventory_money (CoinDispenser *dispensers) {
+int inventoryMoney (CoinDispenser *dispensers) {
 	/* calculates total amount of money in the coinDispenser
 	 *
 	 * Arguments:
@@ -272,7 +317,7 @@ int inventory_money (CoinDispenser *dispensers) {
 	return sum;
 }
 
-bool coin_to_dispense (int userValue, CoinDispenser *dispensers, int *coinDispense) {
+bool coinToDispense (int userValue, CoinDispenser *dispensers, int *coinDispense) {
 	/* calculates how much of each coin to dispense
 	 *
 	 * Arguments:
@@ -315,7 +360,7 @@ bool coin_to_dispense (int userValue, CoinDispenser *dispensers, int *coinDispen
 }
 
 // FOR TESTING MOTORS
-void servo_sweep (CoinDispenser* cd) {
+void servoSweep (CoinDispenser* cd) {
 	int angles[5] = {25, 70, 90, 120, 180};
 
 	for (int i = 0; i < 5; i++) {

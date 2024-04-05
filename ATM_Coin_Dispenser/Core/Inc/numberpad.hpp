@@ -24,13 +24,12 @@ public:
 
 	// USER FUNCTIONS
 	// collect user input and continuously display on LCD
-	const char* numberToDisplay(LCD);
+	int numberToDisplay(LCD);
 
 	// checks if confirm button was pressed
 	bool isConfirm();
 
-	// checks if cancel button was pressed
-	bool isCancel();
+	int getPin(LCD, char* errorMessage);
 };
 
 #endif /* INC_NUMBERPAD_HPP_ */

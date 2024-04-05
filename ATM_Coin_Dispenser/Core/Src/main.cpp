@@ -134,28 +134,12 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	int state = 2;
+	int state = 0;
   while (1)
   {
     /* USER CODE END WHILE */
 
-	  state = state_machine(state, dispensers, numPad, lcd);
-	  //int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0};
-
-	  //servo_sweep (&dispensers[1]);
-	  //dispensers[1].push_coin(3);
-	  //dispensers[0].push_coin(5);
-
-	  //servo_sweep (&dispensers[2]);
-	  //dispensers[2].push_coin(2);
-	  //servo_sweep (&dispensers[3]);
-	  //dispensers[3].push_coin(3);
-	  //dispensers[4].push_coin(3);
-
-	  //numPad.numberToDisplay(lcd);
-
-	  // Add debounce delay if necessary
-	  //HAL_Delay(30);
+	  state = stateMachine(state, dispensers, numPad, lcd);
 
     /* USER CODE BEGIN 3 */
   }

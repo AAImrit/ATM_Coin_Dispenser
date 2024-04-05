@@ -15,20 +15,13 @@
 #include "stm32f4xx_hal.h"
 #include <stdint.h>
 #include <i2c.hpp>
+#include <string.h>
 
 class LCD {
 public:
 	LCD();
 	//virtual ~LCD();
 
-	// FUNCTIONS
-
-	/*
-	void lcd_init(void);
-	void lcd_send_string(char *str);
-	void setCursor(int a, int b);
-	void lcd_clear(void);
-	*/
 public:
 	void lcd_write_i2c(char saddr, uint8_t *buffer, uint8_t length);
 	void lcd_send_cmd(char cmd);
@@ -37,6 +30,7 @@ public:
 	void lcd_send_string(char *str);
 	void lcd_init(void);
 	void lcd_clear(void);
+	void lcd_write_message(bool clear, char* errorMessage, char* message[4]);
 };
 
 #endif /* INC_LCD_HPP_ */

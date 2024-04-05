@@ -12,6 +12,10 @@
 #include "stm32f4xx.h"
 #define SLAVE_ADDRESS_LCD (0x27) // change this according to ur setup
 
+// Initializing variables
+char lcdData[30];
+
+
 LCD::LCD() {
 	// TODO Auto-generated constructor stub
 
@@ -23,29 +27,69 @@ LCD::~LCD() {
 }
 */
 
+void LCD::lcd_write_message(bool clear, char* errorMessage, char* message[4])
+{
+	// clear LCD screen
+	if (clear == true){
+		lcd_clear();
+	}
+
+	// iterate through the message array
+	for (int i = 0; i < 4; i++){
+
+		// first Line
+		if (i == 0){
+			// concatenate the error message with the first line
+			char line[30];
+			strcpy(line, errorMessage);
+			strcat(line, message[i]);
+
+			// calculate the offset value for centering
+			int colCursor = (20 - strlen(line))/2;
+
+			// write to LCD
+			setCursor(colCursor, i);
+			sprintf(lcdData, line);
+			lcd_send_string(lcdData);
+		}
+
+		// all Other Lines
+		else{
+			// get the line
+			char* line = message[i];
+
+			// calculate the offset value for centering
+			int colCursor = (20 - strlen(line))/2;
+
+			// write to LCD
+			setCursor(colCursor, i);
+			sprintf(lcdData, line);
+			lcd_send_string(lcdData);
+		}
+	}
+}
+
 void LCD::lcd_write_i2c(char saddr,uint8_t *buffer, uint8_t length)
 {
 	while (I2C1->SR2 & I2C_SR2_BUSY);           //wait until bus not busy
 
-	I2C1->CR1 |= I2C_CR1_START;                   //generate start
+	I2C1->CR1 |= I2C_CR1_START;                 //generate start
 
-	while (!(I2C1->SR1 & I2C_SR1_SB)){;}					//wait until start is generated
+	while (!(I2C1->SR1 & I2C_SR1_SB)){;}		//wait until start is generated
 
-	I2C1->DR = saddr<< 1;                 	 			// Send slave address
-	while (!(I2C1->SR1 & I2C_SR1_ADDR)){;}        //wait until address flag is set
+	I2C1->DR = saddr<< 1;                 	 	// Send slave address
+	while (!(I2C1->SR1 & I2C_SR1_ADDR)){;}      //wait until address flag is set
 
-	(void)I2C1->SR2; 														//Clear SR2
+	(void)I2C1->SR2; 							//Clear SR2
 	//sending the data
 	for (uint8_t i=0;i<length;i++)
 	 {
-		I2C1->DR=buffer[i]; 													//filling buffer with command or data
+		I2C1->DR=buffer[i]; 					//filling buffer with command or data
 		while (!(I2C1->SR1 & I2C_SR1_BTF));
 	 }
 
-	I2C1->CR1 |= I2C_CR1_STOP;										//wait until transfer finished
-
+	I2C1->CR1 |= I2C_CR1_STOP;					//wait until transfer finished
 }
-
 
 void LCD::lcd_send_cmd(char cmd)
 {
@@ -88,7 +132,6 @@ void LCD::setCursor(int a, int b)
 	lcd_send_cmd(0x14);
 }
 
-
 void LCD::lcd_send_string(char *str)
 {
 	while (*str) lcd_send_data (*str++);
@@ -123,11 +166,7 @@ void LCD::lcd_init(void)
 
 void LCD::lcd_clear(void)
 {
-
 	#define LCD_CLEARDISPLAY 0x01
 	lcd_send_cmd(LCD_CLEARDISPLAY);
 	HAL_Delay(100);
-
 }
-
-

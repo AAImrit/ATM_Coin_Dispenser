@@ -20,12 +20,11 @@
 //extern const int DISPENSER_SIZE; //constant value cuz we have 5 coin dispensers
 
 //Declare functions:
-int state_machine(int state, CoinDispenser *dispensers, numberpad numPad, LCD lcd);
-int inventory_money (CoinDispenser *dispensers);
-bool coin_to_dispense (int userValue, CoinDispenser *dispensers, int *coinDispense);
-void servo_sweep (CoinDispenser* cd);
-bool validateUserInput (int userVal, CoinDispenser *dispensers);
-//int convert_user_input (std::string userInput);
-int convert_user_input (const char* userInput);
+int stateMachine(int state, CoinDispenser *dispensers, numberpad numPad, LCD lcd);
+int inventoryMoney (CoinDispenser *dispensers);
+bool coinToDispense (int userValue, CoinDispenser *dispensers, int *coinDispense);
+void servoSweep (CoinDispenser* cd);
+int validateUserInput (int userVal, CoinDispenser *dispensers);
+int roundUserInput (int userInput);
 
 #endif /* INC_MAIN_LOGIC_HPP_ */
