@@ -17,8 +17,6 @@
 #include <string>
 #include <iostream>
 
-//extern const int DISPENSER_SIZE; //constant value cuz we have 5 coin dispensers
-
 //Declare functions:
 int stateMachine(int state, CoinDispenser *dispensers, numberpad numPad, LCD lcd);
 int inventoryMoney (CoinDispenser *dispensers);
@@ -26,5 +24,6 @@ bool coinToDispense (int userValue, CoinDispenser *dispensers, int *coinDispense
 void servoSweep (CoinDispenser* cd);
 int validateUserInput (int userVal, CoinDispenser *dispensers);
 int roundUserInput (int userInput);
+char* convertIntToFloatString(int integer, char* LCDMessage);
 
 #endif /* INC_MAIN_LOGIC_HPP_ */

@@ -12,12 +12,6 @@
 #include <stdlib.h>
 
 
-
-//#define ROW_COUNT 4
-//#define COL_COUNT 3
-
-
-
 numberpad::numberpad() {
 	// TODO Auto-generated constructor stub
 
@@ -260,7 +254,7 @@ int numberpad::getPin(LCD lcd, char* errorMessage)
 		}
 
 		else if (keyPressed == '*'){
-			return 0;
+			return 100000;
 		}
 	}
 

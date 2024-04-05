@@ -24,210 +24,128 @@ std::string error_msg = "";
 
 
 int stateMachine(int state, CoinDispenser *dispensers, numberpad numPad, LCD lcd) {
+	char* errMessage = "";
+
 	switch (state) {
-
 		// START PAGE
-		case 0:
-		{
+		case 0: {
 			// LCD
-			char* errMessageStart = "";
 			char* LCDStartPage[4] = {"", "Welcome", "Press # To Start", ""};
-			lcd.lcd_write_message(true, errMessageStart, LCDStartPage);
+			lcd.lcd_write_message(true, errMessage, LCDStartPage);
 
-			// wait for the confirm button to be pressed
-			bool buttonPress = numPad.isConfirm();
+			bool buttonPress = numPad.isConfirm(); // wait for the confirm button to be pressed
 
 			// ADD - Timeout
 			while (buttonPress != true){
 				buttonPress = numPad.isConfirm();
 			}
 
-			// set the previous state to the current one
-			globalPreviousState = 0;
-
-			// return state 1 (move on to next case)
-			return 1;
+			globalPreviousState = 0; // set the previous state to the current one
+			return 1; // return state 1 (move on to next case)
 		}
 
 
 		// ENTER PIN
-		case 1:
-		{
+		case 1: {
 			// LCD
-			char* errMessagePin = "";
-
 			// display error message if user inputed wrong pin (been through case 1 before)
 			if (globalPreviousState == 1){
-				errMessagePin = "Invalid: ";
+				errMessage = "Invalid: ";
 			}
 
 			char* LCDPin[4] = {"Enter Pin", "", "Press # to Continue", "Press * to Cancel"};
-			lcd.lcd_write_message(true, errMessagePin, LCDPin);
+			lcd.lcd_write_message(true, errMessage, LCDPin);
 
 
-			// get the user pin
-			int pin = numPad.getPin(lcd, errMessagePin);
+			int pin = numPad.getPin(lcd, errMessage); // get the user pin
 
 			// checking if cancel or pin is valid (matches internal password)
 			if (pin != 1234){
 
-				// check for cancel
-				if (pin == 0){
-					// return to start page
-					return 0;
+				if (pin == 100000){ // check for cancel
+					return 0;// return to start page
 				}
 
-				// set the previous state to the current one
-				globalPreviousState = 1;
+				globalPreviousState = 1; // set the previous state to the current one
 
-				// return to current state
-				return 1;
+				return 1; // return to current state
 			}
 
-
-			// set the previous state to the current one
-			globalPreviousState = 1;
-
-			// return state 2 (move on to next case)
-			return 2;
+			globalPreviousState = 1; // set the previous state to the current one
+			return 2; // return state 2 (move on to next case)
 		}
 
 
 		// ENTER AMOUNT & DISPENSING
-		case 2:
-		{
+		case 2: {
 
 			// GETTING USER INPUT
-			// LCD - Enter Amount
-			char* errMessageDispense = "";
+			// LCD: Enter Amount
 			char* LCDAmount[4] = {"Enter Amount", "$00.00", "Press # to Continue", "Press * to Cancel"};
-			lcd.lcd_write_message(true, errMessageDispense, LCDAmount);
+			lcd.lcd_write_message(true, errMessage, LCDAmount);
 
-			// get withdrawal amount and convert to int
-			int userInput = numPad.numberToDisplay(lcd);
+			int userInput = numPad.numberToDisplay(lcd);// get withdrawal amount and convert to int
 
-			// check for cancel
-			if (userInput == 100000){
-				// return to start page
+			if (userInput == 100000){ // check for cancel
 				return 0;
 			}
 
-			// round input
+			//round and check for valid input
 			int userVal = roundUserInput(userInput);
-
-			// check if input is valid
 			int isInputValid = validateUserInput(userVal, dispensers);
 
-			if (isInputValid != 1){
-				// Error #1 - User Enters Blank Value
-				if (isInputValid == 100000){
-					char* LCDError1[4] = {"Error: Zero Amount", "", "Enter Value > $00.00", "Press # to Retry"};
-					lcd.lcd_write_message(true, errMessageDispense, LCDError1);
+			if (isInputValid != 1){ // Check for errors
+				if (isInputValid == 100000){ // Error #1 - User Enters Blank Value
+					char* LCDError1[4] = {"Error: Zero Amount", "Enter Value > $00.00", "Press # to Retry", ""};
+					lcd.lcd_write_message(true, errMessage, LCDError1);
+
+				} else { // Error #2 - User Enters Amount Exceeding Inventory, Display the Amount
+					char* inventoryLine = convertIntToFloatString(isInputValid, "Enter Value < $"); // convert int into a string for the LCD
+					char* LCDError2[4] = {"Error: Low Inventory", inventoryLine, "Press # to Retry", ""};
+					lcd.lcd_write_message(true, errMessage, LCDError2);
 				}
 
-				// Error #2 - User Enters Amount Exceeding Inventory, Display the Amount
-				else{
-					// convert int into a string
-					char floatString[100];
-					sprintf(floatString, "%d", isInputValid);
-
-					int length = strlen(floatString);
-
-					// adding zeroes to beginning of string to ensure correct decimal placement
-					if (length < 4){
-						int diff = 4-length;
-						for (int i = 0; i < diff; i++){
-							memmove(floatString+1, floatString, ++length);
-							*floatString = '0';
-						}
-					}
-
-					// add the decimal
-					int position = strlen(floatString) - 2;
-					memmove(floatString+position+1, floatString+position, strlen(floatString)-position+1);
-					floatString[position] = '.';
-
-					// concatenate the inventory amount with message
-					char line[20];
-					strcpy(line, "Enter Value < $");
-					strcat(line, floatString);
-
-					// send to LCD
-					char* LCDError2[4] = {"Error: Low Inventory", "", line, "Press # to Retry"};
-					lcd.lcd_write_message(true, errMessageDispense, LCDError2);
-				}
-
-				// wait for the confirm button to be pressed
-				bool buttonPress = numPad.isConfirm();
+				bool buttonPress = numPad.isConfirm(); // wait for the confirm button to be pressed
 
 				// ADD - Timeout
 				while (buttonPress != true){
 					buttonPress = numPad.isConfirm();
 				}
 
-				// return to current state
-				return 2;
+				return 2; // return to current state
 			}
 
 			// DISPENSING
-
-			// initiate variable to hold number of coins required for each type
-			int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0};
-
 			// get number of coins required for each type
+			int coinDispense[DISPENSER_SIZE] = {0,0,0,0,0};
 			bool isDispense = coinToDispense(userVal, dispensers, coinDispense);
 
-			char line[20];
-			sprintf(line, "%dT %dL %dQ %dD %d5", coinDispense[0], coinDispense[1], coinDispense[2], coinDispense[3], coinDispense[4]);
-
-			if (!isDispense) {
+			if (!isDispense) { //cannot dispense coins, not enough coins of right type
+				char line[20];
+				sprintf(line, "%dT %dL %dQ %dD %dN", dispensers[0].get_coin_left(), dispensers[1].get_coin_left(), dispensers[2].get_coin_left(), dispensers[3].get_coin_left(), dispensers[4].get_coin_left());
 				char* LCDError3[4] = {"Not Enough Coins!", "Current Inventory:", line, "Press # to Retry"};
-				lcd.lcd_write_message(true, errMessageDispense, LCDError3);
+				lcd.lcd_write_message(true, errMessage, LCDError3);
 
-				// wait for the confirm button to be pressed
-				bool buttonPress = numPad.isConfirm();
+				bool buttonPress = numPad.isConfirm(); // wait for the confirm button to be pressed
 
 				// ADD - Timeout
 				while (buttonPress != true){
 					buttonPress = numPad.isConfirm();
 				}
 
-				// return to current state
-				return 2;
+				return 2; // return to current state
 			}
 
 
 			// if the ATM can return the amount
+			char* dispenseLine = convertIntToFloatString(userVal, "Dispensing: "); // convert userVal into a string for the LCD
 
-			// SHOULD TURN INTO FUNCTION
-			// convert int into a string
-			char floatString[100];
-			sprintf(floatString, "%d", userVal);
-
-			int length = strlen(floatString);
-
-			// adding zeroes to beginning of string to ensure correct decimal placement
-			if (length < 4){
-				int diff = 4-length;
-				for (int i = 0; i < diff; i++){
-					memmove(floatString+1, floatString, ++length);
-					*floatString = '0';
-				}
-			}
-
-			// add the decimal
-			int position = strlen(floatString) - 2;
-			memmove(floatString+position+1, floatString+position, strlen(floatString)-position+1);
-			floatString[position] = '.';
-
-			// concatenate the inventory amount with message
-			char dispenseLine[20];
-			strcpy(dispenseLine, "Dispensing: $");
-			strcat(dispenseLine, floatString);
-
-			// LCD - Dispensing
+			// LCD: Dispensing
+			char line[20];
+			sprintf(line, "%dT %dL %dQ %dD %dN", coinDispense[0], coinDispense[1], coinDispense[2], coinDispense[3], coinDispense[4]);
 			char* LCDDispense[4] = {"", dispenseLine, line, ""};
-			lcd.lcd_write_message(true, errMessageDispense, LCDDispense);
+			lcd.lcd_write_message(true, errMessage, LCDDispense);
+			HAL_Delay(2000); // add time delay
 
 			// Dispensing Coins
 			for (int i=0; i<DISPENSER_SIZE; i++) {
@@ -236,14 +154,13 @@ int stateMachine(int state, CoinDispenser *dispensers, numberpad numPad, LCD lcd
 				}
 			}
 
-			// LCD - Complete Transaction
+			// LCD: Complete Transaction
 			char* LCDComplete[4] = {"Transaction Complete", "Please Pick Up", "Your Coins", ""};
-			lcd.lcd_write_message(true, errMessageDispense, LCDComplete);
+			lcd.lcd_write_message(true, errMessage, LCDComplete);
+			HAL_Delay(5000); // time delay
 
-			// Added a time delay, can change this
-			HAL_Delay(5000);
-
-			return 0;
+			globalPreviousState = 2;
+			return 0; // go back to home page
 		}
 	}
 }
@@ -257,20 +174,15 @@ int roundUserInput (int userInput) {
 
 	// setting it up so that we always round up to the nearest 5 cents no matter what
 	// round up because want to give the user more than they need, not less
-	if (lastVal == 0)
-	{
+	if (lastVal == 0){
 		// no rounding required
 		return userInput;
 	}
 
-	if (lastVal <=5)
-	{
+	if (lastVal <=5) {
 		// round to 5
 		userInput = userInput + (5-lastVal);
-	}
-
-	else
-	{
+	} else {
 		// round to 10
 		userInput = userInput + (10-lastVal);
 	}
@@ -359,16 +271,31 @@ bool coinToDispense (int userValue, CoinDispenser *dispensers, int *coinDispense
 	return true; //we can dispense the amount requested
 }
 
-// FOR TESTING MOTORS
-void servoSweep (CoinDispenser* cd) {
-	int angles[5] = {25, 70, 90, 120, 180};
+char* convertIntToFloatString(int integer, char* LCDMessage){
+	// convert int into a string
+	char floatString[100];
+	sprintf(floatString, "%d", integer);
 
-	for (int i = 0; i < 5; i++) {
-		cd->servo_write(angles[i]);
-		HAL_Delay(200);
-		//servo_write(0);
-		HAL_Delay(200);
+	int length = strlen(floatString);
+
+	// adding zeroes to beginning of string to ensure correct decimal placement
+	if (length < 4){
+		int diff = 4-length;
+		for (int i = 0; i < diff; i++){
+			memmove(floatString+1, floatString, ++length);
+			*floatString = '0';
+		}
 	}
-	HAL_Delay(600);
 
+	// add the decimal
+	int position = strlen(floatString) - 2;
+	memmove(floatString+position+1, floatString+position, strlen(floatString)-position+1);
+	floatString[position] = '.';
+
+	// concatenate the inventory amount with message
+	static char data[20];
+	strcpy(data, LCDMessage);
+	strcat(data, floatString);
+
+	return data;
 }

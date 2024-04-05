@@ -35,10 +35,10 @@ private:
 	//do I have to check that coinLeft does not go below 0??
 
 public:
-	//constructor
+	// constructor
 	CoinDispenser(int cap, int val, const servo& servoObj);
 
-	//functions to do stuff
+	// functions
 	void start_PMW ();
 	void servo_write(int angle);
 	void push_coin (int amount = 1);

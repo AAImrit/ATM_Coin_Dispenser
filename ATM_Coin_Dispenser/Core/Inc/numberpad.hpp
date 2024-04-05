@@ -23,13 +23,9 @@ public:
 	static char decode_keypad(uint8_t col, uint8_t row);
 
 	// USER FUNCTIONS
-	// collect user input and continuously display on LCD
-	int numberToDisplay(LCD);
-
-	// checks if confirm button was pressed
-	bool isConfirm();
-
-	int getPin(LCD, char* errorMessage);
+	int numberToDisplay(LCD); // collect user input and continuously display on LCD
+	bool isConfirm(); // checks if confirm button was pressed
+	int getPin(LCD, char* errorMessage); // collect pin from user
 };
 
 #endif /* INC_NUMBERPAD_HPP_ */

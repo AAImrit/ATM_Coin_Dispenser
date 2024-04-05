@@ -124,17 +124,17 @@ int main(void)
   }
 
 
-	// Initiate Objects - will be passed to main_logic function
-	numberpad numPad;
-	LCD lcd;
-	lcd.lcd_init();
-	numPad.keypad_init();
+  // Initiate Objects - will be passed to main_logic function
+  numberpad numPad;
+  numPad.keypad_init();
+  LCD lcd;
+  lcd.lcd_init();
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-	int state = 0;
+  int state = 0;
   while (1)
   {
     /* USER CODE END WHILE */
