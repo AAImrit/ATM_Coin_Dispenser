@@ -1,11 +1,2 @@
-## Important Files and Location
-- main.cpp
-  - Used to run the code
-  - Location: core->src
-- coindispenser.cpp & coindispenser.hpp
-  - CoinDispenser Object, used to control servo and define the content of each dispenser tube
-  - .cpp files defines the main body of the function, .hpp file defines the object's variables and function
-  - Location: core->inc
-- ATM_coin_dispenser.ioc
-  - Used to set up the pins and configuaration of the STM32
-  - Location: the main folder
+## MIE438 ATM Coin Dispenser
+This repository contains the code that was used to implement a ATM Coin Dispenser using an STM32 F411RE. The main logic for the dispenser is available in ATM_Coin_Dispenser/Core/Src/main_logic.cpp
